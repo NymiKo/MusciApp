@@ -1,6 +1,8 @@
 package data
 
 data class Song(
-    val name: String,
-    val image: String
+    val title: String,
+    val artist: String,
+    val urlMusic: String,
+    val urlImage: String
 )

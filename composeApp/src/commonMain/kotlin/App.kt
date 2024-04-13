@@ -35,12 +35,7 @@ fun App() {
         var showContent by remember { mutableStateOf(false) }
         val greeting = remember { Greeting().greet() }
         val listMusic = listOf(
-            Song("Песня 1", ""),
-            Song("Песня 2", ""),
-            Song("Песня 3", ""),
-            Song("Песня 4", ""),
-            Song("Песня 5", ""),
-            Song("Песня 6", "")
+            "", "", "", ""
         )
         Surface(color = Color.Transparent, modifier = Modifier.background(Color.Transparent)) {
             LazyVerticalGrid(
@@ -61,7 +56,7 @@ fun App() {
                             imageVector = Icons.Default.Done,
                             contentDescription = null
                         )
-                        Text(modifier = Modifier.padding(start = 8.dp), text = song.name)
+                        Text(modifier = Modifier.padding(start = 8.dp), text = song)
                     }
                 }
             }

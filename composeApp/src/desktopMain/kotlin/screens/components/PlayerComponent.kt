@@ -1,7 +1,6 @@
 package screens.components
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -18,7 +17,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -32,7 +30,6 @@ import androidx.compose.material.icons.filled.SkipNext
 import androidx.compose.material.icons.filled.SkipPrevious
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Slider
-import androidx.compose.material3.SliderColors
 import androidx.compose.material3.SliderDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -54,8 +51,8 @@ import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
+import data.Song
 import screens.AudioPlayer
 import screens.custom_elements.slider.customSliderColors
 import screens.custom_elements.text.DefaultText
@@ -63,6 +60,76 @@ import screens.custom_elements.text.DefaultText
 @OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun PlayerComponent(modifier: Modifier = Modifier) {
+    var indexMusic by remember { mutableStateOf(0) }
+    val listMusic = remember { listOf(
+        Song(
+            "LE SSERAFIM",
+            "EASY",
+            "http://f0862137.xsph.ru/images/LE_SSERAFIM_-_EASY_77468865.mp3",
+            "https://static.wikia.nocookie.net/kpop/images/2/23/LE_SSERAFIM_Easy_digital_cover.png/revision/latest?cb=20240219121927&path-prefix=ru"
+        ),
+        Song(
+            "Stray Kids",
+            "LALALA",
+            "http://f0862137.xsph.ru/images/Stray_Kids_-_LALALA_76943246.mp3",
+            "https://static.wikia.nocookie.net/stray-kids/images/5/5f/LALALALA_MV_gif.gif/revision/latest?cb=20231112234310"
+        ),
+        Song(
+            "Ariana Grande",
+            "7 rings",
+            "http://f0862137.xsph.ru/images/Ariana_Grande_-_7_rings_61522389.mp3",
+            "https://static.wikia.nocookie.net/arianagrande/images/e/ef/7_Rings_Cover.jpg/revision/latest/scale-to-width-down/1000?cb=20190206061540"
+        ),
+        Song(
+            "Avril Lavigne",
+            "Bite Me",
+            "http://f0862137.xsph.ru/images/Avril_Lavigne_-_Bite_Me_73300491.mp3",
+            "https://static.wikia.nocookie.net/avrillavigne/images/2/2c/Bite_Me.jpg/revision/latest?cb=20211111215256"
+        ),
+        Song(
+            "Dreamcatcher",
+            "Deja Vu",
+            "http://f0862137.xsph.ru/images/Dreamcatcher_-_Deja_Vu_68900495.mp3",
+            "https://static.wikia.nocookie.net/dreamcatcherwiki/images/b/b3/Raid_of_Dream_Digital_Album_Cover.png/revision/latest/scale-to-width-down/1000?cb=20191127014333"
+        ),
+        Song(
+            "Hollywood Undead",
+            "We Are",
+            "http://f0862137.xsph.ru/images/Hollywood_Undead_-_We_Are_47894453.mp3",
+            "https://static.wikia.nocookie.net/hollywoodundead/images/5/5d/Swan_Songs1.png/revision/latest/scale-to-width-down/1000?cb=20150313212021"
+        ),
+        Song(
+            "Jonas Brothers",
+            "Burnin Up",
+            "http://f0862137.xsph.ru/images/Jonas_Brothers_-_Burnin_Up_48385614.mp3",
+            "https://i1.sndcdn.com/artworks-000120469024-6g0tto-t500x500.jpg"
+        ),
+        Song(
+            "LE SSERAFIM",
+            "FEARLESS",
+            "http://f0862137.xsph.ru/images/LE_SSERAFIM_-_FEARLESS_74181268.mp3",
+            "https://static.wikia.nocookie.net/le-sserafim/images/4/45/FEARLESS_digital_album_cover.jpg/revision/latest/scale-to-width-down/1000?cb=20220502104016"
+        ),
+        Song(
+            "LISA",
+            "MONEY",
+            "http://f0862137.xsph.ru/images/LISA_-_MONEY_73159159.mp3",
+            "https://static.wikia.nocookie.net/blinks/images/2/20/Lisa_Lalisa_digital_album_cover.jpeg/revision/latest?cb=20210910040123"
+        ),
+        Song(
+            "Linkin Park",
+            "Don`t Stay",
+            "http://f0862137.xsph.ru/images/Linkin_Park_-_Dont_Stay_47828660.mp3",
+            "https://sun9-1.userapi.com/impf/c638718/v638718073/3562f/Bm6pEEYsx1c.jpg?size=1024x1024&quality=96&sign=aea537bdf6cd5cedc4fea3e207755687&c_uniq_tag=R36FXHm1P6-ZBGUcXgNBtTEB8hmlBhjXmqZSVGGFj6w&type=album"
+        ),
+        Song(
+            "aespa",
+            "Drama",
+            "http://f0862137.xsph.ru/images/aespa_-_Drama_76980884.mp3",
+            "https://static.wikia.nocookie.net/kpop/images/e/ee/Aespa_Drama_digital_album_cover.png/revision/latest?cb=20231109060919"
+        )
+    ).shuffled() }
+
     Box(
         modifier = modifier.fillMaxWidth().height(80.dp)
             .border(0.5.dp, Color(0xFF1B1B1B), RoundedCornerShape(16.dp))
@@ -74,7 +141,7 @@ fun PlayerComponent(modifier: Modifier = Modifier) {
         ) {
             AsyncImage(
                 modifier = Modifier.size(60.dp).clip(RoundedCornerShape(8.dp)),
-                model = "https://gas-kvas.com/grafic/uploads/posts/2023-10/1696502271_gas-kvas-com-p-kartinki-lyubie-5.jpg",
+                model = listMusic[indexMusic].urlImage,
                 contentDescription = null,
                 contentScale = ContentScale.Crop
             )
@@ -87,13 +154,13 @@ fun PlayerComponent(modifier: Modifier = Modifier) {
                 )
             ) {
                 DefaultText(
-                    text = "What is Love?",
+                    text = listMusic[indexMusic].title,
                     fontWeight = FontWeight.Bold,
                     color = Color.White,
                     letterSpacing = TextUnit(-0.5F, TextUnitType.Sp)
                 )
                 DefaultText(
-                    text = "TWICE",
+                    text = listMusic[indexMusic].artist,
                     fontWeight = FontWeight.Bold,
                     color = Color.Gray,
                     letterSpacing = TextUnit(-0.5F, TextUnitType.Sp)
@@ -116,9 +183,16 @@ fun PlayerComponent(modifier: Modifier = Modifier) {
                 var activeNext by remember { mutableStateOf(false) }
                 var isPlayed by remember { mutableStateOf(false) }
                 val audioPlayer by remember { mutableStateOf(AudioPlayer()) }
-                var count by remember { mutableStateOf(0) }
+                var isPrepared by remember { mutableStateOf(false) }
 
-                IconButton(onClick = {}) {
+                IconButton(onClick = {
+                    if (indexMusic == 0) {
+                        audioPlayer.play(listMusic[0].urlMusic)
+                    } else {
+                        indexMusic--
+                        audioPlayer.play(listMusic[indexMusic].urlMusic)
+                    }
+                }) {
                     Icon(
                         modifier = Modifier.size(30.dp)
                             .onPointerEvent(PointerEventType.Enter) { activePrevious = true }
@@ -130,11 +204,11 @@ fun PlayerComponent(modifier: Modifier = Modifier) {
                 }
 
                 IconButton(onClick = {
-                    if (!audioPlayer.isPlaying() && count == 0) {
+                    if (!audioPlayer.isPlaying() && !isPrepared) {
                         audioPlayer.prepare()
-                        audioPlayer.play("http://f0862137.xsph.ru/images/LE_SSERAFIM_-_EASY_77468865.mp3")
+                        audioPlayer.play(listMusic[0].urlMusic)
                     }
-                    count++
+                    isPrepared = true
                     if (isPlayed) {
                         isPlayed = false
                         audioPlayer.pause()
@@ -153,7 +227,15 @@ fun PlayerComponent(modifier: Modifier = Modifier) {
                     )
                 }
 
-                IconButton(onClick = {}) {
+                IconButton(onClick = {
+                    if (indexMusic == listMusic.lastIndex) {
+                        indexMusic = 0
+                        audioPlayer.play(listMusic[0].urlMusic)
+                    } else {
+                        indexMusic++
+                        audioPlayer.play(listMusic[indexMusic].urlMusic)
+                    }
+                }) {
                     Icon(
                         modifier = Modifier.size(30.dp)
                             .onPointerEvent(PointerEventType.Enter) { activeNext = true }
