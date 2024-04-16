@@ -1,11 +1,13 @@
-package screens.components
+package screens.player_view
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -18,6 +20,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.onClick
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
@@ -32,6 +35,9 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -51,17 +57,20 @@ import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
+import audio_player.AudioPlayerController
+import audio_player.AudioPlayerListener
 import coil3.compose.AsyncImage
 import data.Song
-import screens.AudioPlayer
 import screens.custom_elements.slider.customSliderColors
 import screens.custom_elements.text.DefaultText
 
 @OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun PlayerComponent(modifier: Modifier = Modifier) {
-    var indexMusic by remember { mutableStateOf(0) }
-    val listMusic = remember { listOf(
+    val indexSong = remember { mutableStateOf(0) }
+    val audioPlayerController = remember { AudioPlayerController() }
+    var currentTime = remember { mutableStateOf(0F) }
+    val songsList = remember { listOf(
         Song(
             "LE SSERAFIM",
             "EASY",
@@ -130,6 +139,14 @@ fun PlayerComponent(modifier: Modifier = Modifier) {
         )
     ).shuffled() }
 
+    LaunchedEffect(songsList) { indexSong.value = 0 }
+
+    remember { mutableStateOf(
+        playSong(songsList[indexSong.value], audioPlayerController = audioPlayerController, selectedSongIndex = indexSong, songsList = songsList, currentTime = currentTime)
+    ) }
+
+    val isPlaying = remember { mutableStateOf(false) }
+
     Box(
         modifier = modifier.fillMaxWidth().height(80.dp)
             .border(0.5.dp, Color(0xFF1B1B1B), RoundedCornerShape(16.dp))
@@ -141,7 +158,7 @@ fun PlayerComponent(modifier: Modifier = Modifier) {
         ) {
             AsyncImage(
                 modifier = Modifier.size(60.dp).clip(RoundedCornerShape(8.dp)),
-                model = listMusic[indexMusic].urlImage,
+                model = songsList[indexSong.value].urlImage,
                 contentDescription = null,
                 contentScale = ContentScale.Crop
             )
@@ -154,13 +171,13 @@ fun PlayerComponent(modifier: Modifier = Modifier) {
                 )
             ) {
                 DefaultText(
-                    text = listMusic[indexMusic].title,
+                    text = songsList[indexSong.value].title,
                     fontWeight = FontWeight.Bold,
                     color = Color.White,
                     letterSpacing = TextUnit(-0.5F, TextUnitType.Sp)
                 )
                 DefaultText(
-                    text = listMusic[indexMusic].artist,
+                    text = songsList[indexSong.value].artist,
                     fontWeight = FontWeight.Bold,
                     color = Color.Gray,
                     letterSpacing = TextUnit(-0.5F, TextUnitType.Sp)
@@ -176,75 +193,61 @@ fun PlayerComponent(modifier: Modifier = Modifier) {
             var activeTimeMusic by remember { mutableStateOf(false) }
 
             Row(
-
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 var activePrevious by remember { mutableStateOf(false) }
                 var activePlay by remember { mutableStateOf(false) }
                 var activeNext by remember { mutableStateOf(false) }
-                var isPlayed by remember { mutableStateOf(false) }
-                val audioPlayer by remember { mutableStateOf(AudioPlayer()) }
-                var isPrepared by remember { mutableStateOf(false) }
 
-                IconButton(onClick = {
-                    if (indexMusic == 0) {
-                        audioPlayer.play(listMusic[0].urlMusic)
-                    } else {
-                        indexMusic--
-                        audioPlayer.play(listMusic[indexMusic].urlMusic)
-                    }
-                }) {
-                    Icon(
-                        modifier = Modifier.size(30.dp)
-                            .onPointerEvent(PointerEventType.Enter) { activePrevious = true }
-                            .onPointerEvent(PointerEventType.Exit) { activePrevious = false },
-                        imageVector = Icons.Default.SkipPrevious,
-                        contentDescription = null,
-                        tint = if (activePrevious) Color.White else Color.Gray
-                    )
-                }
+                Icon(
+                    modifier = Modifier.size(30.dp)
+                        .onPointerEvent(PointerEventType.Enter) { activePrevious = true }
+                        .onPointerEvent(PointerEventType.Exit) { activePrevious = false }
+                        .clickable {
+                            if (indexSong.value == 0) {
+                                indexSong.value = 0
+                            } else {
+                                indexSong.value -= 1
+                            }
+                        },
+                    imageVector = Icons.Default.SkipPrevious,
+                    contentDescription = null,
+                    tint = if (activePrevious) Color.White else Color.Gray
+                )
 
-                IconButton(onClick = {
-                    if (!audioPlayer.isPlaying() && !isPrepared) {
-                        audioPlayer.prepare()
-                        audioPlayer.play(listMusic[0].urlMusic)
-                    }
-                    isPrepared = true
-                    if (isPlayed) {
-                        isPlayed = false
-                        audioPlayer.pause()
-                    } else {
-                        isPlayed = true
-                        audioPlayer.start()
-                    }
-                }) {
-                    Icon(
-                        modifier = Modifier.size(if (activePlay) 47.dp else 45.dp)
-                            .onPointerEvent(PointerEventType.Enter) { activePlay = true }
-                            .onPointerEvent(PointerEventType.Exit) { activePlay = false },
-                        imageVector = if (isPlayed) Icons.Filled.PauseCircle else Icons.Filled.PlayCircle,
-                        contentDescription = null,
-                        tint = Color.White
-                    )
-                }
+                Icon(
+                    modifier = Modifier.size(if (activePlay) 47.dp else 45.dp)
+                        .onPointerEvent(PointerEventType.Enter) { activePlay = true }
+                        .onPointerEvent(PointerEventType.Exit) { activePlay = false }
+                        .clickable {
+                            if (audioPlayerController.isPlaying()) {
+                                audioPlayerController.pause()
+                                isPlaying.value = false
+                            } else {
+                                audioPlayerController.start()
+                                isPlaying.value = true
+                            }
+                        },
+                    imageVector = if (isPlaying.value) Icons.Filled.PauseCircle else Icons.Filled.PlayCircle,
+                    contentDescription = null,
+                    tint = Color.White
+                )
 
-                IconButton(onClick = {
-                    if (indexMusic == listMusic.lastIndex) {
-                        indexMusic = 0
-                        audioPlayer.play(listMusic[0].urlMusic)
-                    } else {
-                        indexMusic++
-                        audioPlayer.play(listMusic[indexMusic].urlMusic)
-                    }
-                }) {
-                    Icon(
-                        modifier = Modifier.size(30.dp)
-                            .onPointerEvent(PointerEventType.Enter) { activeNext = true }
-                            .onPointerEvent(PointerEventType.Exit) { activeNext = false },
-                        imageVector = Icons.Filled.SkipNext,
-                        contentDescription = null,
-                        tint = if (activeNext) Color.White else Color.Gray
-                    )
-                }
+                Icon(
+                    modifier = Modifier.size(30.dp)
+                        .onPointerEvent(PointerEventType.Enter) { activeNext = true }
+                        .onPointerEvent(PointerEventType.Exit) { activeNext = false }
+                        .clickable {
+                            if (indexSong.value == songsList.lastIndex) {
+                                indexSong.value = 0
+                            } else {
+                                indexSong.value++
+                            }
+                        },
+                    imageVector = Icons.Filled.SkipNext,
+                    contentDescription = null,
+                    tint = if (activeNext) Color.White else Color.Gray
+                )
             }
 
             Row(
@@ -253,7 +256,6 @@ fun PlayerComponent(modifier: Modifier = Modifier) {
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Center
             ) {
-                var musicTime by remember { mutableFloatStateOf(0.3F) }
                 val interactionSource = MutableInteractionSource()
 
                 AnimatedVisibility(
@@ -263,7 +265,7 @@ fun PlayerComponent(modifier: Modifier = Modifier) {
                 ) {
                     DefaultText(
                         modifier = Modifier.padding(bottom = 4.dp).wrapContentSize(unbounded = true),
-                        text = "00:03",
+                        text = "${currentTime.value.toLong()/1000/60}:${if(currentTime.value.toLong()/1000 > 9) currentTime.value.toLong()/1000 else (currentTime.value.toLong()/1000).toString().padStart(2, '0')}",
                         fontWeight = FontWeight.Bold,
                         color = Color.Gray,
                         letterSpacing = TextUnit(-0.5F, TextUnitType.Sp)
@@ -272,9 +274,10 @@ fun PlayerComponent(modifier: Modifier = Modifier) {
 
                 Slider(
                     modifier = Modifier.width(300.dp),
-                    value = musicTime,
-                    onValueChange = { musicTime = it },
+                    value = currentTime.value,
+                    onValueChange = { currentTime.value = it },
                     interactionSource = interactionSource,
+                    valueRange = 0F..audioPlayerController.getFullTime().toFloat(),
                     track = { sliderState ->
                         SliderDefaults.Track(
                             modifier = Modifier.scale(scaleX = 1F, scaleY = 0.9F),
@@ -301,7 +304,7 @@ fun PlayerComponent(modifier: Modifier = Modifier) {
                     exit = fadeOut(animationSpec = tween(400))
                 ) {
                     DefaultText(
-                        text = "03:28",
+                        text = "${audioPlayerController.getFullTime()/1000/60}:${audioPlayerController.getFullTime()/1000/60*10}",
                         fontWeight = FontWeight.Bold,
                         color = Color.Gray,
                         letterSpacing = TextUnit(-0.5F, TextUnitType.Sp)
@@ -327,4 +330,34 @@ fun PlayerComponent(modifier: Modifier = Modifier) {
             }
         }
     }
+}
+
+private fun playSong(
+    song: Song,
+    audioPlayerController: AudioPlayerController,
+    selectedSongIndex: MutableState<Int>,
+    songsList: List<Song>,
+    currentTime: MutableState<Float>
+) {
+    audioPlayerController.prepare(song.urlMusic, listener = object : AudioPlayerListener {
+        override fun onReady() {
+
+        }
+
+        override fun timeChanged(newTime: Long) {
+            currentTime.value = newTime.toFloat()
+        }
+
+        override fun onAudioFinished() {
+            if (selectedSongIndex.value < songsList.lastIndex) {
+                selectedSongIndex.value += 1
+            }
+        }
+
+        override fun onError() {
+            if (selectedSongIndex.value < songsList.lastIndex) {
+                selectedSongIndex.value += 1
+            }
+        }
+    })
 }

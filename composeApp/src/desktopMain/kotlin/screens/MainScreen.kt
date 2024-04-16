@@ -45,7 +45,7 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import screens.components.PlayerComponent
+import screens.player_view.PlayerComponent
 import screens.custom_elements.text.DefaultText
 
 @Composable
