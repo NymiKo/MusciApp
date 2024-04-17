@@ -1,5 +1,7 @@
 package audio_player
 
+import audio_player.AudioPlayerListener
+
 actual class AudioPlayerController actual constructor() {
     actual fun prepare(url: String, listener: AudioPlayerListener) {
     }

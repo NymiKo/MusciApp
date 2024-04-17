@@ -10,6 +10,7 @@ androidx-core-ktx = "1.12.0"
 androidx-espresso-core = "3.5.1"
 androidx-material = "1.11.0"
 androidx-test-junit = "1.1.5"
+androidx-lifecycle-viewmodel = "2.8.0-alpha04"
 compose = "1.6.5"
 compose-plugin = "1.6.0"
 junit = "4.13.2"
@@ -18,6 +19,7 @@ coil = "3.0.0-alpha06"
 ktor = "3.0.0-beta-1"
 kotlinx-coroutines = "1.8.1-Beta"
 vlcj = "4.8.2"
+koin = "3.6.0-wasm-alpha2"
 
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
@@ -38,6 +40,9 @@ ktor = { module = "io.ktor:ktor-client-android", version.ref = "ktor" }
 kotlin-coroutines-swing = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-swing", version.ref = "kotlinx-coroutines" }
 kotlin-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "kotlinx-coroutines" }
 vlcj = { module = "uk.co.caprica:vlcj", version.ref = "vlcj" }
+koin-bom = { module = "io.insert-koin:koin-bom", version.ref = "koin" }
+koin-core = { module = "io.insert-koin:koin-core" }
+koin-android = { module = "io.insert-koin:koin-android" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

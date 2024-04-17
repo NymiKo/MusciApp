@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -41,59 +40,12 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.PointerEventType
 import androidx.compose.ui.input.pointer.onPointerEvent
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.TextUnit
-import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import screens.player_view.PlayerComponent
 import screens.custom_elements.text.DefaultText
 
 @Composable
-fun MainScreen(modifier: Modifier = Modifier) {
-    Row(
-        modifier = modifier.fillMaxSize().background(Color.Black.copy(alpha = 0.95F))
-    ) {
-        Title(modifier = Modifier.align(Alignment.Top))
-        Trends(modifier = Modifier)
-    }
-}
-
-@Composable
-private fun Title(modifier: Modifier = Modifier) {
-    Column(
-        modifier = modifier.padding(horizontal = 40.dp, vertical = 8.dp)
-    ) {
-        Text(
-            modifier = Modifier,
-            fontWeight = FontWeight.Bold,
-            text = "Не яндекс",
-            fontSize = 16.sp,
-            color = Color.Yellow
-        )
-        Text(
-            modifier = Modifier,
-            text = "Музыка",
-            fontSize = 26.sp,
-            letterSpacing = TextUnit(4F, TextUnitType.Sp),
-            fontWeight = FontWeight.ExtraBold,
-            color = Color.Yellow
-        )
-    }
-}
-
-@Composable
-private fun Trends(modifier: Modifier = Modifier) {
-    Column(
-        modifier = modifier.padding(12.dp).fillMaxSize(),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
-    ) {
-        TrendsComponent(modifier = Modifier.weight(1F))
-        PlayerComponent(modifier = Modifier)
-    }
-}
-
-@Composable
-private fun TrendsComponent(modifier: Modifier = Modifier) {
+fun TrendsScreen(modifier: Modifier = Modifier) {
     Column(
         modifier = modifier.fillMaxWidth()
             .border(0.5.dp, Color(0xFF1B1B1B), RoundedCornerShape(16.dp))

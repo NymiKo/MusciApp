@@ -24,6 +24,9 @@ kotlin {
             implementation(libs.compose.ui.tooling.preview)
             implementation(libs.androidx.activity.compose)
             implementation(libs.kotlin.coroutines.android)
+            implementation(project.dependencies.platform(libs.koin.bom))
+            implementation(libs.koin.core)
+            implementation(libs.koin.android)
         }
         commonMain.dependencies {
             implementation(compose.runtime)
@@ -34,6 +37,8 @@ kotlin {
             implementation(compose.components.resources)
             implementation(libs.coil)
             implementation(compose.components.uiToolingPreview)
+            implementation(project.dependencies.platform(libs.koin.bom))
+            implementation(libs.koin.core)
         }
         desktopMain.dependencies {
             implementation(compose.desktop.currentOs)
@@ -42,6 +47,8 @@ kotlin {
             implementation(libs.ktor)
             implementation(libs.kotlin.coroutines.swing)
             implementation(libs.vlcj)
+            implementation(project.dependencies.platform(libs.koin.bom))
+            implementation(libs.koin.core)
         }
     }
 }
