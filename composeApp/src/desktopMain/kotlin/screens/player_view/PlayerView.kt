@@ -69,21 +69,10 @@ fun PlayerComponent(
     viewModel: SongsViewModel = koin.get()
 ) {
     val indexSong = remember { mutableStateOf(0) }
-    val audioPlayerControllerImpl = remember { DesktopAudioPlayerController() }
-    var currentTime = remember { mutableStateOf(0F) }
+    val currentTime by viewModel.currentTime.collectAsState()
     val songsList by viewModel.songsListFLow.collectAsState()
 
-    remember {
-        playSong(
-            songsList[indexSong.value],
-            audioPlayerControllerImpl = audioPlayerControllerImpl,
-            selectedSongIndex = indexSong,
-            songsList = songsList,
-            currentTime = currentTime
-        )
-    }
-
-    val isPlaying = remember { mutableStateOf(false) }
+    val isPlaying by viewModel.isPlaying.collectAsState()
 
     Box(
         modifier = modifier.fillMaxWidth().height(80.dp)
@@ -158,15 +147,9 @@ fun PlayerComponent(
                         .onPointerEvent(PointerEventType.Enter) { activePlay = true }
                         .onPointerEvent(PointerEventType.Exit) { activePlay = false }
                         .clickable {
-                            if (audioPlayerControllerImpl.isPlaying()) {
-                                audioPlayerControllerImpl.pause()
-                                isPlaying.value = false
-                            } else {
-                                audioPlayerControllerImpl.start()
-                                isPlaying.value = true
-                            }
+                            viewModel.pauseOrPlay()
                         },
-                    imageVector = if (isPlaying.value) Icons.Filled.PauseCircle else Icons.Filled.PlayCircle,
+                    imageVector = if (isPlaying) Icons.Filled.PauseCircle else Icons.Filled.PlayCircle,
                     contentDescription = null,
                     tint = Color.White
                 )
@@ -207,8 +190,8 @@ fun PlayerComponent(
                     DefaultText(
                         modifier = Modifier.padding(bottom = 4.dp)
                             .wrapContentSize(unbounded = true),
-                        text = "${currentTime.value.toLong() / 1000 / 60}:${
-                            if (currentTime.value.toLong() / 1000 > 9) currentTime.value.toLong() / 1000 else (currentTime.value.toLong() / 1000).toString()
+                        text = "${currentTime.toLong() / 1000 / 60}:${
+                            if (currentTime.toLong() / 1000 > 9) currentTime.toLong() / 1000 else (currentTime.toLong() / 1000).toString()
                                 .padStart(2, '0')
                         }",
                         fontWeight = FontWeight.Bold,
@@ -219,10 +202,10 @@ fun PlayerComponent(
 
                 Slider(
                     modifier = Modifier.width(300.dp),
-                    value = currentTime.value,
-                    onValueChange = { currentTime.value = it },
+                    value = currentTime,
+                    onValueChange = { viewModel.changeTime(it) },
                     interactionSource = interactionSource,
-                    valueRange = 0F..audioPlayerControllerImpl.getFullTime().toFloat(),
+                    valueRange = 0F..viewModel.getFullTime().toFloat(),
                     track = { sliderState ->
                         SliderDefaults.Track(
                             modifier = Modifier.scale(scaleX = 1F, scaleY = 0.9F),
@@ -253,7 +236,7 @@ fun PlayerComponent(
                     exit = fadeOut(animationSpec = tween(400))
                 ) {
                     DefaultText(
-                        text = "${audioPlayerControllerImpl.getFullTime() / 1000 / 60}:${audioPlayerControllerImpl.getFullTime() / 1000 / 60 * 10}",
+                        text = "${viewModel.getFullTime() / 1000 / 60}:${viewModel.getFullTime() / 1000 / 60 * 10}",
                         fontWeight = FontWeight.Bold,
                         color = Color.Gray,
                         letterSpacing = TextUnit(-0.5F, TextUnitType.Sp)
@@ -279,34 +262,4 @@ fun PlayerComponent(
             }
         }
     }
-}
-
-private fun playSong(
-    song: Song,
-    audioPlayerControllerImpl: DesktopAudioPlayerController,
-    selectedSongIndex: MutableState<Int>,
-    songsList: List<Song>,
-    currentTime: MutableState<Float>
-) {
-    audioPlayerControllerImpl.prepare(song.urlMusic, listener = object : AudioPlayerListener {
-        override fun onReady() {
-
-        }
-
-        override fun timeChanged(newTime: Long) {
-            currentTime.value = newTime.toFloat()
-        }
-
-        override fun onAudioFinished() {
-            if (selectedSongIndex.value < songsList.lastIndex) {
-                selectedSongIndex.value += 1
-            }
-        }
-
-        override fun onError() {
-            if (selectedSongIndex.value < songsList.lastIndex) {
-                selectedSongIndex.value += 1
-            }
-        }
-    })
 }
