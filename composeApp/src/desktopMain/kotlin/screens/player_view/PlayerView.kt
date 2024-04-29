@@ -53,8 +53,8 @@ import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
-import audio_player.AudioPlayerController
 import audio_player.AudioPlayerListener
+import audio_player.DesktopAudioPlayerController
 import coil3.compose.AsyncImage
 import data.SongsViewModel
 import data.model.Song
@@ -69,12 +69,18 @@ fun PlayerComponent(
     viewModel: SongsViewModel = koin.get()
 ) {
     val indexSong = remember { mutableStateOf(0) }
-    val audioPlayerController = remember { AudioPlayerController() }
+    val audioPlayerControllerImpl = remember { DesktopAudioPlayerController() }
     var currentTime = remember { mutableStateOf(0F) }
     val songsList by viewModel.songsListFLow.collectAsState()
 
     remember {
-        playSong(songsList[indexSong.value], audioPlayerController = audioPlayerController, selectedSongIndex = indexSong, songsList = songsList, currentTime = currentTime)
+        playSong(
+            songsList[indexSong.value],
+            audioPlayerControllerImpl = audioPlayerControllerImpl,
+            selectedSongIndex = indexSong,
+            songsList = songsList,
+            currentTime = currentTime
+        )
     }
 
     val isPlaying = remember { mutableStateOf(false) }
@@ -152,11 +158,11 @@ fun PlayerComponent(
                         .onPointerEvent(PointerEventType.Enter) { activePlay = true }
                         .onPointerEvent(PointerEventType.Exit) { activePlay = false }
                         .clickable {
-                            if (audioPlayerController.isPlaying()) {
-                                audioPlayerController.pause()
+                            if (audioPlayerControllerImpl.isPlaying()) {
+                                audioPlayerControllerImpl.pause()
                                 isPlaying.value = false
                             } else {
-                                audioPlayerController.start()
+                                audioPlayerControllerImpl.start()
                                 isPlaying.value = true
                             }
                         },
@@ -183,8 +189,11 @@ fun PlayerComponent(
             }
 
             Row(
-                modifier = Modifier.onPointerEvent(PointerEventType.Enter) { activeTimeMusic = true }
-                    .onPointerEvent(PointerEventType.Exit) { activeTimeMusic = false }.padding(bottom = 8.dp),
+                modifier = Modifier.onPointerEvent(PointerEventType.Enter) {
+                    activeTimeMusic = true
+                }
+                    .onPointerEvent(PointerEventType.Exit) { activeTimeMusic = false }
+                    .padding(bottom = 8.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Center
             ) {
@@ -196,8 +205,12 @@ fun PlayerComponent(
                     exit = fadeOut(animationSpec = tween(400))
                 ) {
                     DefaultText(
-                        modifier = Modifier.padding(bottom = 4.dp).wrapContentSize(unbounded = true),
-                        text = "${currentTime.value.toLong()/1000/60}:${if(currentTime.value.toLong()/1000 > 9) currentTime.value.toLong()/1000 else (currentTime.value.toLong()/1000).toString().padStart(2, '0')}",
+                        modifier = Modifier.padding(bottom = 4.dp)
+                            .wrapContentSize(unbounded = true),
+                        text = "${currentTime.value.toLong() / 1000 / 60}:${
+                            if (currentTime.value.toLong() / 1000 > 9) currentTime.value.toLong() / 1000 else (currentTime.value.toLong() / 1000).toString()
+                                .padStart(2, '0')
+                        }",
                         fontWeight = FontWeight.Bold,
                         color = Color.Gray,
                         letterSpacing = TextUnit(-0.5F, TextUnitType.Sp)
@@ -209,17 +222,21 @@ fun PlayerComponent(
                     value = currentTime.value,
                     onValueChange = { currentTime.value = it },
                     interactionSource = interactionSource,
-                    valueRange = 0F..audioPlayerController.getFullTime().toFloat(),
+                    valueRange = 0F..audioPlayerControllerImpl.getFullTime().toFloat(),
                     track = { sliderState ->
                         SliderDefaults.Track(
                             modifier = Modifier.scale(scaleX = 1F, scaleY = 0.9F),
                             sliderState = sliderState,
-                            colors = customSliderColors(activeTrackColor = Color.White, inactiveTrackColor = Color.Gray.copy(alpha = 0.4F))
+                            colors = customSliderColors(
+                                activeTrackColor = Color.White,
+                                inactiveTrackColor = Color.Gray.copy(alpha = 0.4F)
+                            )
                         )
                     },
                     thumb = {
                         SliderDefaults.Thumb(
-                            modifier = Modifier.clip(CircleShape).border(4.dp, Color(0xFF121212), CircleShape).padding(2.dp),
+                            modifier = Modifier.clip(CircleShape)
+                                .border(4.dp, Color(0xFF121212), CircleShape).padding(2.dp),
                             interactionSource = interactionSource,
                             thumbSize = DpSize(width = 15.dp, height = 15.dp),
                             colors = customSliderColors(
@@ -236,7 +253,7 @@ fun PlayerComponent(
                     exit = fadeOut(animationSpec = tween(400))
                 ) {
                     DefaultText(
-                        text = "${audioPlayerController.getFullTime()/1000/60}:${audioPlayerController.getFullTime()/1000/60*10}",
+                        text = "${audioPlayerControllerImpl.getFullTime() / 1000 / 60}:${audioPlayerControllerImpl.getFullTime() / 1000 / 60 * 10}",
                         fontWeight = FontWeight.Bold,
                         color = Color.Gray,
                         letterSpacing = TextUnit(-0.5F, TextUnitType.Sp)
@@ -266,12 +283,12 @@ fun PlayerComponent(
 
 private fun playSong(
     song: Song,
-    audioPlayerController: AudioPlayerController,
+    audioPlayerControllerImpl: DesktopAudioPlayerController,
     selectedSongIndex: MutableState<Int>,
     songsList: List<Song>,
     currentTime: MutableState<Float>
 ) {
-    audioPlayerController.prepare(song.urlMusic, listener = object : AudioPlayerListener {
+    audioPlayerControllerImpl.prepare(song.urlMusic, listener = object : AudioPlayerListener {
         override fun onReady() {
 
         }

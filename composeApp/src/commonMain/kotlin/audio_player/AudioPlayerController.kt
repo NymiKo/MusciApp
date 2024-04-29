@@ -1,6 +1,6 @@
 package audio_player
 
-expect class AudioPlayerController() {
+interface AudioPlayerController {
     fun prepare(url: String, listener: AudioPlayerListener)
     fun start()
     fun pause()

@@ -5,7 +5,7 @@ import data.model.Song
 class SongsRepositoryImpl(
 
 ): SongsRepository {
-    override suspend fun getSongsList(): List<Song> {
+    override suspend fun getSongsList(): List<Song>  {
         return listOf(
             Song(
                 "LE SSERAFIM",

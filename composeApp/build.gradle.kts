@@ -23,7 +23,6 @@ kotlin {
         androidMain.dependencies {
             implementation(libs.compose.ui.tooling.preview)
             implementation(libs.androidx.activity.compose)
-            implementation(libs.kotlin.coroutines.android)
             implementation(project.dependencies.platform(libs.koin.bom))
             implementation(libs.koin.core)
             implementation(libs.koin.android)
@@ -39,13 +38,15 @@ kotlin {
             implementation(compose.components.uiToolingPreview)
             implementation(project.dependencies.platform(libs.koin.bom))
             implementation(libs.koin.core)
+            implementation(libs.kotlin.coroutines.core)
+            implementation(libs.kotlin.coroutines.swing)
+            implementation(libs.androidx.lifecycle.viewmodel)
         }
         desktopMain.dependencies {
             implementation(compose.desktop.currentOs)
             implementation(libs.coil)
             implementation(libs.coil.ktor)
             implementation(libs.ktor)
-            implementation(libs.kotlin.coroutines.swing)
             implementation(libs.vlcj)
             implementation(project.dependencies.platform(libs.koin.bom))
             implementation(libs.koin.core)

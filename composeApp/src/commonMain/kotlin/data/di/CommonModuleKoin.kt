@@ -1,12 +1,10 @@
 package data.di
 
-import data.SongsApi
+import audio_player.AudioPlayerController
 import data.SongsRepository
 import data.SongsRepositoryImpl
 import data.SongsViewModel
+import org.koin.core.module.Module
 import org.koin.dsl.module
 
-val commonModule = module {
-    single<SongsRepository> { SongsRepositoryImpl() }
-    factory { SongsViewModel(get()) }
-}
+expect val commonModule: Module
