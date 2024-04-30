@@ -59,8 +59,8 @@ import coil3.compose.AsyncImage
 import data.SongsViewModel
 import data.model.Song
 import koin
-import screens.custom_elements.slider.customSliderColors
-import screens.custom_elements.text.DefaultText
+import custom_elements.slider.customSliderColors
+import custom_elements.text.DefaultText
 
 @OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterial3Api::class)
 @Composable
@@ -68,10 +68,9 @@ fun PlayerComponent(
     modifier: Modifier = Modifier,
     viewModel: SongsViewModel = koin.get()
 ) {
-    val indexSong = remember { mutableStateOf(0) }
+    val indexSong by viewModel.indexSong.collectAsState()
     val currentTime by viewModel.currentTime.collectAsState()
     val songsList by viewModel.songsListFLow.collectAsState()
-
     val isPlaying by viewModel.isPlaying.collectAsState()
 
     Box(
@@ -85,7 +84,7 @@ fun PlayerComponent(
         ) {
             AsyncImage(
                 modifier = Modifier.size(60.dp).clip(RoundedCornerShape(8.dp)),
-                model = songsList[indexSong.value].urlImage,
+                model = songsList[indexSong].urlImage,
                 contentDescription = null,
                 contentScale = ContentScale.Crop
             )
@@ -98,13 +97,13 @@ fun PlayerComponent(
                 )
             ) {
                 DefaultText(
-                    text = songsList[indexSong.value].title,
+                    text = songsList[indexSong].title,
                     fontWeight = FontWeight.Bold,
                     color = Color.White,
                     letterSpacing = TextUnit(-0.5F, TextUnitType.Sp)
                 )
                 DefaultText(
-                    text = songsList[indexSong.value].artist,
+                    text = songsList[indexSong].artist,
                     fontWeight = FontWeight.Bold,
                     color = Color.Gray,
                     letterSpacing = TextUnit(-0.5F, TextUnitType.Sp)
@@ -131,11 +130,7 @@ fun PlayerComponent(
                         .onPointerEvent(PointerEventType.Enter) { activePrevious = true }
                         .onPointerEvent(PointerEventType.Exit) { activePrevious = false }
                         .clickable {
-                            if (indexSong.value == 0) {
-                                indexSong.value = 0
-                            } else {
-                                indexSong.value -= 1
-                            }
+                            viewModel.prevSong()
                         },
                     imageVector = Icons.Default.SkipPrevious,
                     contentDescription = null,
@@ -159,11 +154,7 @@ fun PlayerComponent(
                         .onPointerEvent(PointerEventType.Enter) { activeNext = true }
                         .onPointerEvent(PointerEventType.Exit) { activeNext = false }
                         .clickable {
-                            if (indexSong.value == songsList.lastIndex) {
-                                indexSong.value = 0
-                            } else {
-                                indexSong.value++
-                            }
+                            viewModel.nextSong()
                         },
                     imageVector = Icons.Filled.SkipNext,
                     contentDescription = null,

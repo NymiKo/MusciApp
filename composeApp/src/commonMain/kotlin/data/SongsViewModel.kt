@@ -43,7 +43,9 @@ class SongsViewModel(
     private val _isPlaying = MutableStateFlow(false)
     val isPlaying: StateFlow<Boolean> get() = _isPlaying
 
-    private var indexSong: Int = 2
+    private val _indexSong = MutableStateFlow(0)
+    val indexSong: StateFlow<Int> get() = _indexSong
+
     private val _currentTime = MutableStateFlow<Float>(0F)
     val currentTime: StateFlow<Float> get() = _currentTime
 
@@ -60,7 +62,7 @@ class SongsViewModel(
     }
 
     private fun playSong() {
-        audioPlayerController.prepare(_songsListFLow.value[indexSong].urlMusic, listener = object : AudioPlayerListener {
+        audioPlayerController.prepare(_songsListFLow.value[_indexSong.value].urlMusic, listener = object : AudioPlayerListener {
             override fun onReady() {
 
             }
@@ -70,14 +72,14 @@ class SongsViewModel(
             }
 
             override fun onAudioFinished() {
-                if (indexSong < _songsListFLow.value.lastIndex) {
-                    indexSong += 1
+                if (_indexSong.value < _songsListFLow.value.lastIndex) {
+                    _indexSong.value += 1
                 }
             }
 
             override fun onError() {
-                if (indexSong < _songsListFLow.value.lastIndex) {
-                    indexSong += 1
+                if (_indexSong.value < _songsListFLow.value.lastIndex) {
+                    _indexSong.value += 1
                 }
             }
         })
@@ -111,5 +113,21 @@ class SongsViewModel(
 
     fun changeTime(time: Float) {
         _currentTime.value = time
+    }
+
+    fun nextSong() {
+        if (_indexSong.value == _songsListFLow.value.lastIndex) {
+            _indexSong.value = 0
+        } else {
+            _indexSong.value++
+        }
+    }
+
+    fun prevSong() {
+        if (_indexSong.value == 0) {
+            _indexSong.value = 0
+        } else {
+            _indexSong.value--
+        }
     }
 }

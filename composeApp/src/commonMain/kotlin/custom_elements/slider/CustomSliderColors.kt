@@ -1,4 +1,4 @@
-package screens.custom_elements.slider
+package custom_elements.slider
 
 import androidx.compose.material3.SliderColors
 import androidx.compose.ui.graphics.Color

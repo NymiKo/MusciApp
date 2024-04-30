@@ -24,8 +24,12 @@ kotlin {
             implementation(libs.compose.ui.tooling.preview)
             implementation(libs.androidx.activity.compose)
             implementation(project.dependencies.platform(libs.koin.bom))
+            implementation(libs.coil)
+            implementation(libs.coil.ktor)
+            implementation(libs.ktor)
             implementation(libs.koin.core)
             implementation(libs.koin.android)
+            implementation(libs.androidx.lifecycle.viewmodel.ktx)
         }
         commonMain.dependencies {
             implementation(compose.runtime)

@@ -1,4 +1,4 @@
-package screens
+package org.easyprog.musicapp.screens
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateDpAsState
@@ -38,7 +38,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.PointerEventType
-import androidx.compose.ui.input.pointer.onPointerEvent
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -138,9 +137,7 @@ private fun SettingsMyWave(modifier: Modifier = Modifier) {
 private fun RecommendedCategory(modifier: Modifier = Modifier) {
     var active by remember { mutableStateOf(false) }
     Row(
-        modifier = modifier.padding(top = 26.dp).fillMaxWidth()
-            .onPointerEvent(PointerEventType.Enter) { active = true }
-            .onPointerEvent(PointerEventType.Exit) { active = false },
+        modifier = modifier.padding(top = 26.dp).fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Row(
@@ -189,9 +186,9 @@ private fun ChangeRecommendedSong(modifier: Modifier = Modifier, imageVector: Im
     var active by remember { mutableStateOf(false) }
     Icon(
         modifier = modifier.padding(start = 8.dp).size(32.dp)
-            .border(2.dp, Color.White.copy(alpha = if (active) 0.5F else 0.2F), CircleShape).clip(CircleShape)
-            .onPointerEvent(PointerEventType.Enter) { active = true }
-            .onPointerEvent(PointerEventType.Exit) { active = false }
+            .border(2.dp, Color.White.copy(alpha = if (active) 0.5F else 0.2F), CircleShape).clip(
+                CircleShape
+            )
             .padding(4.dp),
         imageVector = imageVector,
         tint = Color.White,
