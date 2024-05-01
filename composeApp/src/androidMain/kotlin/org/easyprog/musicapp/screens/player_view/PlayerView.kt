@@ -1,5 +1,6 @@
 package org.easyprog.musicapp.screens.player_view
 
+import android.graphics.Paint.Align
 import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
@@ -49,10 +50,12 @@ import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
 import custom_elements.slider.customSliderColors
 import custom_elements.text.DefaultText
 import data.SongsViewModel
+import java.util.concurrent.TimeUnit
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -64,22 +67,25 @@ fun PlayerComponent(
     val currentTime by viewModel.currentTime.collectAsState()
     val songsList by viewModel.songsListFLow.collectAsState()
     val isPlaying by viewModel.isPlaying.collectAsState()
+    val fullTime by viewModel.fullTimeSong.collectAsState()
 
     Column(
         modifier = modifier.fillMaxSize().background(Color(0xFF121212)).padding(top = 16.dp, bottom = 16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         AsyncImage(
-            modifier = Modifier.padding(top = 16.dp).size(240.dp).clip(RoundedCornerShape(8.dp)).border(1.dp, Color.White, RoundedCornerShape(8.dp)),
+            modifier = Modifier.padding(top = 80.dp).size(240.dp).clip(RoundedCornerShape(16.dp)).border(1.dp, Color.White, RoundedCornerShape(8.dp)),
             model = songsList[indexSong].urlImage,
             contentDescription = null,
             contentScale = ContentScale.Crop
         )
 
         Column(
-            modifier = Modifier.padding(vertical = 40.dp, horizontal = 32.dp)
+            modifier = Modifier.padding(vertical = 60.dp, horizontal = 32.dp)
         ) {
             val interactionSource = remember { MutableInteractionSource() }
+
+            Spacer(modifier = Modifier.weight(1F))
 
             Column(
                 modifier = Modifier.padding(start = 4.dp).fillMaxWidth(),
@@ -89,13 +95,15 @@ fun PlayerComponent(
                     text = songsList[indexSong].title,
                     fontWeight = FontWeight.Bold,
                     color = Color.White,
-                    letterSpacing = TextUnit(-0.5F, TextUnitType.Sp)
+                    letterSpacing = TextUnit(-0.5F, TextUnitType.Sp),
+                    fontSize = 20.sp
                 )
                 DefaultText(
                     text = songsList[indexSong].artist,
                     fontWeight = FontWeight.Bold,
                     color = Color.Gray,
-                    letterSpacing = TextUnit(-0.5F, TextUnitType.Sp)
+                    letterSpacing = TextUnit(-0.5F, TextUnitType.Sp),
+                    fontSize = 20.sp
                 )
             }
 
@@ -104,7 +112,7 @@ fun PlayerComponent(
                 value = currentTime,
                 onValueChange = { viewModel.changeTime(it) },
                 interactionSource = interactionSource,
-                valueRange = 0F..viewModel.getFullTime().toFloat(),
+                valueRange = 0F..fullTime.toFloat(),
                 track = { sliderState ->
                     SliderDefaults.Track(
                         modifier = Modifier.scale(scaleX = 1F, scaleY = 0.5F),
@@ -131,25 +139,27 @@ fun PlayerComponent(
                 modifier = Modifier.padding(start = 4.dp, bottom = 16.dp).fillMaxWidth()
             ) {
                 DefaultText(
-                    text = "${currentTime.toLong() / 1000 / 60}:${
-                        if (currentTime.toLong() / 1000 > 9) currentTime.toLong() / 1000 else (currentTime.toLong() / 1000).toString()
-                            .padStart(2, '0')
+                    text = "${TimeUnit.MILLISECONDS.toMinutes(currentTime.toLong())}:${
+                        if (TimeUnit.MILLISECONDS.toSeconds(currentTime.toLong()) % 60 > 9) (TimeUnit.MILLISECONDS.toSeconds(currentTime.toLong()) % 60)
+                        else (TimeUnit.MILLISECONDS.toSeconds(currentTime.toLong()) % 60).toString().padStart(2, '0')
                     }",
                     fontWeight = FontWeight.Bold,
                     color = Color.Gray,
-                    letterSpacing = TextUnit(-0.5F, TextUnitType.Sp)
+                    letterSpacing = TextUnit(-0.5F, TextUnitType.Sp),
+                    fontSize = 16.sp
                 )
 
                 Spacer(modifier = Modifier.weight(1F))
 
                 DefaultText(
-                    text = "${viewModel.getFullTime() / 1000 / 60}:${viewModel.getFullTime() / 1000 / 60 * 10}",
+                    text = "${TimeUnit.MILLISECONDS.toMinutes(fullTime)}:${TimeUnit.MILLISECONDS.toSeconds(fullTime) % 60}",
                     fontWeight = FontWeight.Bold,
                     color = Color.Gray,
-                    letterSpacing = TextUnit(-0.5F, TextUnitType.Sp)
+                    letterSpacing = TextUnit(-0.5F, TextUnitType.Sp),
+                    fontSize = 16.sp
                 )
 
-                Log.e("TIME", viewModel.getFullTime().toString())
+                Log.e("TIME", fullTime.toString())
             }
 
             Spacer(modifier = Modifier.weight(1F))
@@ -157,20 +167,20 @@ fun PlayerComponent(
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center
+                horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally)
             ) {
                 Icon(
-                    modifier = Modifier.size(30.dp)
+                    modifier = Modifier.size(50.dp)
                         .clickable {
                             viewModel.prevSong()
                         },
                     imageVector = Icons.Default.SkipPrevious,
                     contentDescription = null,
-                    tint = Color.White
+                    tint = if (indexSong == 0) Color.Gray else Color.White
                 )
 
                 Icon(
-                    modifier = Modifier.size(45.dp)
+                    modifier = Modifier.size(70.dp)
                         .clickable {
                             viewModel.pauseOrPlay()
                         },
@@ -180,7 +190,7 @@ fun PlayerComponent(
                 )
 
                 Icon(
-                    modifier = Modifier.size(30.dp)
+                    modifier = Modifier.size(50.dp)
                         .clickable {
                             viewModel.nextSong()
                         },
