@@ -10,6 +10,6 @@ import org.koin.dsl.module
 
 actual val commonModule: Module = module {
     single<SongsRepository> { SongsRepositoryImpl() }
-    single<AudioPlayerController> { AndroidAudioPlayerController() }
+    single<AudioPlayerController> { AndroidAudioPlayerController(get()) }
     factory { SongsViewModel(get(), get()) }
 }
