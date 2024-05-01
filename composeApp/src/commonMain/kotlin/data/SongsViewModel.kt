@@ -49,6 +49,9 @@ class SongsViewModel(
     private val _currentTime = MutableStateFlow<Float>(0F)
     val currentTime: StateFlow<Float> get() = _currentTime
 
+    private val _fullTimeSong = MutableStateFlow<Long>(0L)
+    val fullTimeSong: StateFlow<Long> get() = _fullTimeSong
+
     init {
         loadSongsList()
     }
@@ -64,7 +67,7 @@ class SongsViewModel(
     private fun playSong() {
         audioPlayerController.prepare(_songsListFLow.value[_indexSong.value].urlMusic, listener = object : AudioPlayerListener {
             override fun onReady() {
-
+                _fullTimeSong.value = audioPlayerController.getFullTime()
             }
 
             override fun timeChanged(newTime: Long) {
@@ -83,10 +86,6 @@ class SongsViewModel(
                 }
             }
         })
-    }
-
-    fun getFullTime(): Long {
-        return audioPlayerController.getFullTime()
     }
 
     fun isPlaying(): Boolean {
@@ -121,6 +120,7 @@ class SongsViewModel(
         } else {
             _indexSong.value++
         }
+        playSong()
     }
 
     fun prevSong() {
@@ -129,5 +129,6 @@ class SongsViewModel(
         } else {
             _indexSong.value--
         }
+        playSong()
     }
 }
