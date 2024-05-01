@@ -30,6 +30,7 @@ kotlin {
             implementation(libs.koin.core)
             implementation(libs.koin.android)
             implementation(libs.androidx.lifecycle.viewmodel.ktx)
+            implementation(libs.media3.exo.player)
         }
         commonMain.dependencies {
             implementation(compose.runtime)
