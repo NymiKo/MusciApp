@@ -152,14 +152,15 @@ fun PlayerComponent(
                 Spacer(modifier = Modifier.weight(1F))
 
                 DefaultText(
-                    text = "${TimeUnit.MILLISECONDS.toMinutes(fullTime)}:${TimeUnit.MILLISECONDS.toSeconds(fullTime) % 60}",
+                    text = "${TimeUnit.MILLISECONDS.toMinutes(fullTime)}:${
+                        if (TimeUnit.MILLISECONDS.toSeconds(fullTime) % 60 > 9) (TimeUnit.MILLISECONDS.toSeconds(fullTime) % 60)
+                        else (TimeUnit.MILLISECONDS.toSeconds(fullTime) % 60).toString().padStart(2, '0')
+                    }",
                     fontWeight = FontWeight.Bold,
                     color = Color.Gray,
                     letterSpacing = TextUnit(-0.5F, TextUnitType.Sp),
                     fontSize = 16.sp
                 )
-
-                Log.e("TIME", fullTime.toString())
             }
 
             Spacer(modifier = Modifier.weight(1F))

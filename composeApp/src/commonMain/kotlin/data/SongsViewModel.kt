@@ -17,26 +17,7 @@ class SongsViewModel(
 ) : ViewModel() {
 
     private val _songsListFLow = MutableStateFlow<List<Song>>(
-        listOf(
-            Song(
-                "LE SSERAFIM",
-                "EASY",
-                "http://f0862137.xsph.ru/images/LE_SSERAFIM_-_EASY_77468865.mp3",
-                "https://static.wikia.nocookie.net/kpop/images/2/23/LE_SSERAFIM_Easy_digital_cover.png/revision/latest?cb=20240219121927&path-prefix=ru"
-            ),
-            Song(
-                "Stray Kids",
-                "LALALA",
-                "http://f0862137.xsph.ru/images/Stray_Kids_-_LALALA_76943246.mp3",
-                "https://static.wikia.nocookie.net/stray-kids/images/5/5f/LALALALA_MV_gif.gif/revision/latest?cb=20231112234310"
-            ),
-            Song(
-                "Ariana Grande",
-                "7 rings",
-                "http://f0862137.xsph.ru/images/Ariana_Grande_-_7_rings_61522389.mp3",
-                "https://static.wikia.nocookie.net/arianagrande/images/e/ef/7_Rings_Cover.jpg/revision/latest/scale-to-width-down/1000?cb=20190206061540"
-            )
-        )
+        emptyList()
     )
     val songsListFLow: StateFlow<List<Song>> get() = _songsListFLow
 
@@ -59,8 +40,8 @@ class SongsViewModel(
     private fun loadSongsList() {
         viewModelScope.launch {
             val result = repository.getSongsList()
+            _songsListFLow.value = result
             playSong()
-            //_songsListFLow.value = result
         }
     }
 
@@ -76,7 +57,7 @@ class SongsViewModel(
 
             override fun onAudioFinished() {
                 if (_indexSong.value < _songsListFLow.value.lastIndex) {
-                    _indexSong.value += 1
+                    _indexSong.value++
                 }
             }
 

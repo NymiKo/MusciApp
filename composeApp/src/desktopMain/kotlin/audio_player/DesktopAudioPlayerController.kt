@@ -46,7 +46,6 @@ class DesktopAudioPlayerController() : AudioPlayerController {
         if (audioPlayer?.status()?.isPlaying == true) {
             audioPlayer?.controls()?.stop()
         }
-        audioPlayer?.media()?.play(url)
     }
 
     override fun start() {

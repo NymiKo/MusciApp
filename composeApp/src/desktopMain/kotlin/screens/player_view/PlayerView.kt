@@ -61,6 +61,7 @@ import data.model.Song
 import koin
 import custom_elements.slider.customSliderColors
 import custom_elements.text.DefaultText
+import java.util.concurrent.TimeUnit
 
 @OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterial3Api::class)
 @Composable
@@ -72,6 +73,7 @@ fun PlayerComponent(
     val currentTime by viewModel.currentTime.collectAsState()
     val songsList by viewModel.songsListFLow.collectAsState()
     val isPlaying by viewModel.isPlaying.collectAsState()
+    val fullTime by viewModel.fullTimeSong.collectAsState()
 
     Box(
         modifier = modifier.fillMaxWidth().height(80.dp)
@@ -181,9 +183,9 @@ fun PlayerComponent(
                     DefaultText(
                         modifier = Modifier.padding(bottom = 4.dp)
                             .wrapContentSize(unbounded = true),
-                        text = "${currentTime.toLong() / 1000 / 60}:${
-                            if (currentTime.toLong() / 1000 > 9) currentTime.toLong() / 1000 else (currentTime.toLong() / 1000).toString()
-                                .padStart(2, '0')
+                        text = "${TimeUnit.MILLISECONDS.toMinutes(currentTime.toLong())}:${
+                            if (TimeUnit.MILLISECONDS.toSeconds(currentTime.toLong()) % 60 > 9) (TimeUnit.MILLISECONDS.toSeconds(currentTime.toLong()) % 60)
+                            else (TimeUnit.MILLISECONDS.toSeconds(currentTime.toLong()) % 60).toString().padStart(2, '0')
                         }",
                         fontWeight = FontWeight.Bold,
                         color = Color.Gray,
@@ -196,7 +198,7 @@ fun PlayerComponent(
                     value = currentTime,
                     onValueChange = { viewModel.changeTime(it) },
                     interactionSource = interactionSource,
-                    valueRange = 0F..viewModel.getFullTime().toFloat(),
+                    valueRange = 0F..fullTime.toFloat(),
                     track = { sliderState ->
                         SliderDefaults.Track(
                             modifier = Modifier.scale(scaleX = 1F, scaleY = 0.9F),
@@ -227,7 +229,10 @@ fun PlayerComponent(
                     exit = fadeOut(animationSpec = tween(400))
                 ) {
                     DefaultText(
-                        text = "${viewModel.getFullTime() / 1000 / 60}:${viewModel.getFullTime() / 1000 / 60 * 10}",
+                        text = "${TimeUnit.MILLISECONDS.toMinutes(fullTime)}:${
+                            if (TimeUnit.MILLISECONDS.toSeconds(fullTime) % 60 > 9) (TimeUnit.MILLISECONDS.toSeconds(fullTime) % 60)
+                            else (TimeUnit.MILLISECONDS.toSeconds(fullTime) % 60).toString().padStart(2, '0')
+                        }",
                         fontWeight = FontWeight.Bold,
                         color = Color.Gray,
                         letterSpacing = TextUnit(-0.5F, TextUnitType.Sp)
