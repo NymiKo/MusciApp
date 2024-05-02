@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.jetbrainsCompose)
+    alias(libs.plugins.kotlinSerialization)
 }
 
 kotlin {
@@ -26,8 +27,8 @@ kotlin {
             implementation(project.dependencies.platform(libs.koin.bom))
             implementation(libs.coil)
             implementation(libs.coil.ktor)
-            implementation(libs.ktor)
             implementation(libs.koin.core)
+            implementation(libs.ktor.client.okhttp)
             implementation(libs.koin.android)
             implementation(libs.androidx.lifecycle.viewmodel.ktx)
             implementation(libs.media3.exo.player)
@@ -40,6 +41,8 @@ kotlin {
             implementation(compose.ui)
             implementation(compose.components.resources)
             implementation(libs.coil)
+            implementation(libs.bundles.ktor)
+            implementation(libs.kotlin.serialization)
             implementation(compose.components.uiToolingPreview)
             implementation(project.dependencies.platform(libs.koin.bom))
             implementation(libs.koin.core)
@@ -51,7 +54,7 @@ kotlin {
             implementation(compose.desktop.currentOs)
             implementation(libs.coil)
             implementation(libs.coil.ktor)
-            implementation(libs.ktor)
+            implementation(libs.ktor.client.cio)
             implementation(libs.vlcj)
             implementation(project.dependencies.platform(libs.koin.bom))
             implementation(libs.koin.core)

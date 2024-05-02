@@ -20,11 +20,6 @@ class DesktopAudioPlayerController() : AudioPlayerController {
                 listener?.onReady()
             }
 
-            override fun timeChanged(mediaPlayer: MediaPlayer?, newTime: Long) {
-                super.timeChanged(mediaPlayer, newTime)
-                listener?.timeChanged(newTime = newTime)
-            }
-
             override fun finished(mediaPlayer: MediaPlayer?) {
                 super.finished(mediaPlayer)
                 listener?.onAudioFinished()
@@ -66,6 +61,10 @@ class DesktopAudioPlayerController() : AudioPlayerController {
 
     override fun release() {
         audioPlayer?.release()
+    }
+
+    override suspend fun currentTime(): Float {
+        return 0F
     }
 
     override fun getFullTime(): Long {

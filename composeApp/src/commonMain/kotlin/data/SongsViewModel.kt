@@ -6,8 +6,11 @@ import audio_player.AudioPlayerController
 import audio_player.AudioPlayerListener
 import data.model.Song
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -49,10 +52,11 @@ class SongsViewModel(
         audioPlayerController.prepare(_songsListFLow.value[_indexSong.value].urlMusic, listener = object : AudioPlayerListener {
             override fun onReady() {
                 _fullTimeSong.value = audioPlayerController.getFullTime()
-            }
-
-            override fun timeChanged(newTime: Long) {
-                _currentTime.value = newTime.toFloat()
+                viewModelScope.launch {
+                    audioPlayerController.getCurrentTime().collect {
+                        _currentTime.value = it.toFloat()
+                    }
+                }
             }
 
             override fun onAudioFinished() {

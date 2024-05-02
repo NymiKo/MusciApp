@@ -5,6 +5,7 @@ import android.media.AudioAttributes
 import android.media.MediaPlayer
 import androidx.annotation.OptIn
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.media3.common.MediaItem
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
@@ -12,14 +13,18 @@ import androidx.media3.common.Timeline
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.trackselection.DefaultTrackSelector
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.last
+import kotlinx.coroutines.flow.lastOrNull
+import kotlinx.coroutines.withContext
+import org.easyprog.musicapp.extension.currentPositionFlow
 
 class AndroidAudioPlayerController(context: Context) : AudioPlayerController {
 
     private var mediaPlayer = ExoPlayer.Builder(context).build()
-    private val _currentTime = MutableStateFlow<Float>(0F)
-    val currentTime: StateFlow<Float> get() = _currentTime
 
     @OptIn(UnstableApi::class)
     override fun prepare(url: String, listener: AudioPlayerListener) {
@@ -67,5 +72,9 @@ class AndroidAudioPlayerController(context: Context) : AudioPlayerController {
 
     override fun release() {
         mediaPlayer.release()
+    }
+
+    override suspend fun getCurrentTime(): Flow<Long> = withContext(Dispatchers.Main) {
+        return@withContext mediaPlayer.currentPositionFlow()
     }
 }
