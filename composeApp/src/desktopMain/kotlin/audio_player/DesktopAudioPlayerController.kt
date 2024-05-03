@@ -22,7 +22,7 @@ class DesktopAudioPlayerController() : AudioPlayerController {
 
             override fun finished(mediaPlayer: MediaPlayer?) {
                 super.finished(mediaPlayer)
-                listener?.onAudioFinished()
+                listener?.onAudioChanged()
             }
 
             override fun error(mediaPlayer: MediaPlayer?) {

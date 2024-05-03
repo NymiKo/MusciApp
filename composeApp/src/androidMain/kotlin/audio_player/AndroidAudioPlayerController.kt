@@ -1,24 +1,14 @@
 package audio_player
 
 import android.content.Context
-import android.media.AudioAttributes
-import android.media.MediaPlayer
 import androidx.annotation.OptIn
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.media3.common.MediaItem
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
-import androidx.media3.common.Timeline
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
-import androidx.media3.exoplayer.trackselection.DefaultTrackSelector
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.last
-import kotlinx.coroutines.flow.lastOrNull
 import kotlinx.coroutines.withContext
 import org.easyprog.musicapp.extension.currentPositionFlow
 
@@ -27,14 +17,14 @@ class AndroidAudioPlayerController(context: Context) : AudioPlayerController {
     private var mediaPlayer = ExoPlayer.Builder(context).build()
 
     @OptIn(UnstableApi::class)
-    override fun prepare(url: String, listener: AudioPlayerListener) {
-        val mediaItem = MediaItem.fromUri(url)
+    override fun prepare(urls: List<String>, listener: AudioPlayerListener) {
+        val mediaItems: List<MediaItem> = urls.map { url -> MediaItem.fromUri(url) }
         mediaPlayer.addListener(object : Player.Listener {
             override fun onPlaybackStateChanged(playbackState: Int) {
                 super.onPlaybackStateChanged(playbackState)
                 when(playbackState) {
                     Player.STATE_READY -> listener.onReady()
-                    Player.STATE_ENDED -> listener.onAudioFinished()
+                    //Player.STATE_ENDED -> listener.onAudioFinished()
                 }
             }
 
@@ -42,9 +32,14 @@ class AndroidAudioPlayerController(context: Context) : AudioPlayerController {
                 super.onPlayerError(error)
                 listener.onError()
             }
+
+            override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
+                super.onMediaItemTransition(mediaItem, reason)
+                listener.onAudioChanged(indexSong = mediaItem?.mediaMetadata?.trackNumber ?: 0)
+            }
         })
 
-        mediaPlayer.setMediaItem(mediaItem)
+        mediaPlayer.setMediaItems(mediaItems)
         mediaPlayer.prepare()
     }
 
@@ -72,6 +67,14 @@ class AndroidAudioPlayerController(context: Context) : AudioPlayerController {
 
     override fun release() {
         mediaPlayer.release()
+    }
+
+    override fun nextSong() {
+        mediaPlayer.seekToNextMediaItem()
+    }
+
+    override fun prevSong() {
+        mediaPlayer.seekToPreviousMediaItem()
     }
 
     override suspend fun getCurrentTime(): Flow<Long> = withContext(Dispatchers.Main) {

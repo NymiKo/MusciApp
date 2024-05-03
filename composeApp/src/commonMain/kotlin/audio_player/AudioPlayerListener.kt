@@ -1,7 +1,9 @@
 package audio_player
 
+import data.model.Song
+
 interface AudioPlayerListener {
     fun onReady()
-    fun onAudioFinished()
+    fun onAudioChanged(indexSong: Int)
     fun onError()
 }

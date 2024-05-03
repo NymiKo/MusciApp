@@ -49,7 +49,7 @@ class SongsViewModel(
     }
 
     private fun playSong() {
-        audioPlayerController.prepare(_songsListFLow.value[_indexSong.value].urlMusic, listener = object : AudioPlayerListener {
+        audioPlayerController.prepare(_songsListFLow.value.map { it.urlMusic }, listener = object : AudioPlayerListener {
             override fun onReady() {
                 _fullTimeSong.value = audioPlayerController.getFullTime()
                 viewModelScope.launch {
@@ -59,10 +59,8 @@ class SongsViewModel(
                 }
             }
 
-            override fun onAudioFinished() {
-                if (_indexSong.value < _songsListFLow.value.lastIndex) {
-                    _indexSong.value++
-                }
+            override fun onAudioChanged(indexSong: Int) {
+                _indexSong.value = indexSong
             }
 
             override fun onError() {
@@ -104,8 +102,8 @@ class SongsViewModel(
             _indexSong.value = 0
         } else {
             _indexSong.value++
+            audioPlayerController.nextSong()
         }
-        playSong()
     }
 
     fun prevSong() {
@@ -113,7 +111,7 @@ class SongsViewModel(
             _indexSong.value = 0
         } else {
             _indexSong.value--
+            audioPlayerController.prevSong()
         }
-        playSong()
     }
 }
