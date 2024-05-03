@@ -7,6 +7,7 @@ import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.session.MediaSession
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
@@ -15,6 +16,7 @@ import org.easyprog.musicapp.extension.currentPositionFlow
 class AndroidAudioPlayerController(context: Context) : AudioPlayerController {
 
     private var mediaPlayer = ExoPlayer.Builder(context).build()
+    private var mediaSession: MediaSession? = MediaSession.Builder(context, mediaPlayer).build()
 
     @OptIn(UnstableApi::class)
     override fun prepare(urls: List<String>, listener: AudioPlayerListener) {
@@ -65,23 +67,15 @@ class AndroidAudioPlayerController(context: Context) : AudioPlayerController {
     }
 
     override fun release() {
-        mediaPlayer.release()
-    }
-
-    override fun nextSong() {
-        if (mediaPlayer.hasNextMediaItem()) {
-            mediaPlayer.seekToNextMediaItem()
-        } else {
-            mediaPlayer.seekToDefaultPosition(0)
+        mediaSession.run {
+            mediaPlayer.release()
+            release()
+            mediaSession = null
         }
     }
 
-    override fun prevSong() {
-        if (mediaPlayer.hasPreviousMediaItem()) {
-            mediaPlayer.seekToPreviousMediaItem()
-        } else {
-            mediaPlayer.seekToDefaultPosition(0)
-        }
+    override fun changeSong(indexSong: Int) {
+        mediaPlayer.seekToDefaultPosition(indexSong)
     }
 
     override suspend fun getCurrentTime(): Flow<Long> = withContext(Dispatchers.Main) {

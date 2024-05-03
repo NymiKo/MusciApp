@@ -10,8 +10,6 @@ interface AudioPlayerController {
     fun isPlaying(): Boolean
     fun getFullTime(): Long
     fun release()
-
-    fun nextSong()
-    fun prevSong()
+    fun changeSong(indexSong: Int)
     suspend fun getCurrentTime(): Flow<Long>
 }

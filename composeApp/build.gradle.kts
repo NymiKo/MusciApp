@@ -31,7 +31,7 @@ kotlin {
             implementation(libs.ktor.client.okhttp)
             implementation(libs.koin.android)
             implementation(libs.androidx.lifecycle.viewmodel.ktx)
-            implementation(libs.media3.exo.player)
+            implementation(libs.bundles.media3)
         }
         commonMain.dependencies {
             implementation(compose.runtime)

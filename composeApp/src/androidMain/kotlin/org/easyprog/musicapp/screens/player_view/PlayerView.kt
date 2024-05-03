@@ -44,12 +44,14 @@ import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -103,13 +105,22 @@ fun PlayerComponent(
             val pagerState = rememberPagerState(pageCount = { songsList.size })
             val coroutineScope = rememberCoroutineScope()
 
+            LaunchedEffect(pagerState) {
+                snapshotFlow { pagerState.currentPage }.collect() { page ->
+                    viewModel.scrollToSong(page)
+                }
+            }
+
+            LaunchedEffect(indexSong) {
+                pagerState.animateScrollToPage(indexSong)
+            }
+
             HorizontalPager(
                 modifier = Modifier.padding(top = 40.dp).fillMaxWidth().height(300.dp),
                 state = pagerState,
                 pageSpacing = 16.dp,
                 beyondBoundsPageCount = 2,
-                contentPadding = PaddingValues(horizontal = 40.dp),
-                userScrollEnabled = false
+                contentPadding = PaddingValues(horizontal = 40.dp)
             ) { page ->
                 Box(modifier = Modifier.fillMaxSize()) {
                     AsyncImage(

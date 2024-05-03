@@ -5,14 +5,9 @@ import androidx.lifecycle.viewModelScope
 import audio_player.AudioPlayerController
 import audio_player.AudioPlayerListener
 import data.model.Song
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 class SongsViewModel(
     private val repository: SongsRepository,
@@ -94,7 +89,7 @@ class SongsViewModel(
             _indexSong.value = 0
         } else {
             _indexSong.value++
-            audioPlayerController.nextSong()
+            audioPlayerController.changeSong(_indexSong.value)
         }
     }
 
@@ -103,7 +98,12 @@ class SongsViewModel(
             _indexSong.value = 0
         } else {
             _indexSong.value--
-            audioPlayerController.prevSong()
+            audioPlayerController.changeSong(_indexSong.value)
         }
+    }
+
+    fun scrollToSong(indexSong: Int) {
+        _indexSong.value = indexSong
+        audioPlayerController.changeSong(_indexSong.value)
     }
 }
