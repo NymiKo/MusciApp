@@ -75,14 +75,6 @@ class SongsViewModel(
         return audioPlayerController.isPlaying()
     }
 
-    fun start() {
-        audioPlayerController.start()
-    }
-
-    fun pause() {
-        audioPlayerController.pause()
-    }
-
     fun pauseOrPlay() {
         if (audioPlayerController.isPlaying()) {
             audioPlayerController.pause()

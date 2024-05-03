@@ -24,7 +24,6 @@ class AndroidAudioPlayerController(context: Context) : AudioPlayerController {
                 super.onPlaybackStateChanged(playbackState)
                 when(playbackState) {
                     Player.STATE_READY -> listener.onReady()
-                    //Player.STATE_ENDED -> listener.onAudioFinished()
                 }
             }
 
@@ -35,7 +34,7 @@ class AndroidAudioPlayerController(context: Context) : AudioPlayerController {
 
             override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
                 super.onMediaItemTransition(mediaItem, reason)
-                listener.onAudioChanged(indexSong = mediaItem?.mediaMetadata?.trackNumber ?: 0)
+                listener.onAudioChanged(indexSong = mediaPlayer.currentMediaItemIndex)
             }
         })
 
@@ -70,11 +69,19 @@ class AndroidAudioPlayerController(context: Context) : AudioPlayerController {
     }
 
     override fun nextSong() {
-        mediaPlayer.seekToNextMediaItem()
+        if (mediaPlayer.hasNextMediaItem()) {
+            mediaPlayer.seekToNextMediaItem()
+        } else {
+            mediaPlayer.seekToDefaultPosition(0)
+        }
     }
 
     override fun prevSong() {
-        mediaPlayer.seekToPreviousMediaItem()
+        if (mediaPlayer.hasPreviousMediaItem()) {
+            mediaPlayer.seekToPreviousMediaItem()
+        } else {
+            mediaPlayer.seekToDefaultPosition(0)
+        }
     }
 
     override suspend fun getCurrentTime(): Flow<Long> = withContext(Dispatchers.Main) {
