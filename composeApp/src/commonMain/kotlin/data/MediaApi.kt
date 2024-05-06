@@ -5,7 +5,7 @@ import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
 
-class SongsApi {
+class MediaApi {
     private val client = HttpClient()
 
     suspend fun getSongsList(): List<Song> {

@@ -1,15 +1,7 @@
 package org.easyprog.musicapp.screens.player_view
 
-import android.graphics.Paint.Align
-import android.util.Log
-import android.widget.ProgressBar
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -24,10 +16,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
@@ -37,20 +25,18 @@ import androidx.compose.material.icons.filled.PauseCircle
 import androidx.compose.material.icons.filled.PlayCircle
 import androidx.compose.material.icons.filled.SkipNext
 import androidx.compose.material.icons.filled.SkipPrevious
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -59,6 +45,7 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.TextUnit
@@ -66,10 +53,13 @@ import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.util.lerp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.LifecycleOwner
 import coil3.compose.AsyncImage
 import custom_elements.slider.customSliderColors
 import custom_elements.text.DefaultText
-import data.SongsViewModel
+import data.MediaViewModel
 import kotlinx.coroutines.launch
 import java.util.concurrent.TimeUnit
 import kotlin.math.absoluteValue
@@ -78,13 +68,28 @@ import kotlin.math.absoluteValue
 @Composable
 fun PlayerComponent(
     modifier: Modifier = Modifier,
-    viewModel: SongsViewModel
+    lifecycleOwner: LifecycleOwner = LocalLifecycleOwner.current,
+    viewModel: MediaViewModel
 ) {
-    val indexSong by viewModel.indexSong.collectAsState()
+    val currentPlayingSongIndex by viewModel.currentPlayingSongIndex.collectAsState()
     val currentTime by viewModel.currentTime.collectAsState()
     val songsList by viewModel.songsListFLow.collectAsState()
     val isPlaying by viewModel.isPlaying.collectAsState()
     val fullTime by viewModel.fullTimeSong.collectAsState()
+
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_STOP) {
+                viewModel.releasePlayer()
+            }
+        }
+
+        lifecycleOwner.lifecycle.addObserver(observer)
+
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
+        }
+    }
 
     if (songsList.isEmpty()) {
         Box(
@@ -111,8 +116,8 @@ fun PlayerComponent(
                 }
             }
 
-            LaunchedEffect(indexSong) {
-                pagerState.animateScrollToPage(indexSong)
+            LaunchedEffect(currentPlayingSongIndex) {
+                pagerState.animateScrollToPage(currentPlayingSongIndex)
             }
 
             HorizontalPager(
@@ -152,14 +157,14 @@ fun PlayerComponent(
                     horizontalAlignment = Alignment.Start
                 ) {
                     DefaultText(
-                        text = songsList[indexSong].title,
+                        text = songsList[currentPlayingSongIndex].title,
                         fontWeight = FontWeight.Bold,
                         color = Color.White,
                         letterSpacing = TextUnit(-0.5F, TextUnitType.Sp),
                         fontSize = 20.sp
                     )
                     DefaultText(
-                        text = songsList[indexSong].artist,
+                        text = songsList[currentPlayingSongIndex].artist,
                         fontWeight = FontWeight.Bold,
                         color = Color.Gray,
                         letterSpacing = TextUnit(-0.5F, TextUnitType.Sp),
@@ -235,12 +240,12 @@ fun PlayerComponent(
                             .clickable {
                                 viewModel.prevSong()
                                 coroutineScope.launch {
-                                    pagerState.animateScrollToPage(indexSong)
+                                    pagerState.animateScrollToPage(currentPlayingSongIndex)
                                 }
                             },
                         imageVector = Icons.Default.SkipPrevious,
                         contentDescription = null,
-                        tint = if (indexSong == 0) Color.Gray else Color.White
+                        tint = if (currentPlayingSongIndex == 0) Color.Gray else Color.White
                     )
 
                     Icon(
@@ -258,7 +263,7 @@ fun PlayerComponent(
                             .clickable {
                                 viewModel.nextSong()
                                 coroutineScope.launch {
-                                    pagerState.animateScrollToPage(indexSong)
+                                    pagerState.animateScrollToPage(currentPlayingSongIndex)
                                 }
                             },
                         imageVector = Icons.Filled.SkipNext,

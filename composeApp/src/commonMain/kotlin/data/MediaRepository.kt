@@ -2,6 +2,6 @@ package data
 
 import data.model.Song
 
-interface SongsRepository {
+interface MediaRepository {
     suspend fun getSongsList(): List<Song>
 }

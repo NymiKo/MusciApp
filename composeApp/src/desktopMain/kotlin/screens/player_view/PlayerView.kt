@@ -33,7 +33,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -53,11 +52,8 @@ import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
-import audio_player.AudioPlayerListener
-import audio_player.DesktopAudioPlayerController
 import coil3.compose.AsyncImage
-import data.SongsViewModel
-import data.model.Song
+import data.MediaViewModel
 import koin
 import custom_elements.slider.customSliderColors
 import custom_elements.text.DefaultText
@@ -67,9 +63,9 @@ import java.util.concurrent.TimeUnit
 @Composable
 fun PlayerComponent(
     modifier: Modifier = Modifier,
-    viewModel: SongsViewModel = koin.get()
+    viewModel: MediaViewModel = koin.get()
 ) {
-    val indexSong by viewModel.indexSong.collectAsState()
+    val indexSong by viewModel.currentPlayingSongIndex.collectAsState()
     val currentTime by viewModel.currentTime.collectAsState()
     val songsList by viewModel.songsListFLow.collectAsState()
     val isPlaying by viewModel.isPlaying.collectAsState()

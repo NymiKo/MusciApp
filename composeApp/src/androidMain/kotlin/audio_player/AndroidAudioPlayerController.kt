@@ -2,14 +2,15 @@ package audio_player
 
 import android.content.ComponentName
 import android.content.Context
+import android.net.Uri
 import androidx.annotation.OptIn
+import androidx.core.net.toUri
 import androidx.media3.common.MediaItem
+import androidx.media3.common.MediaMetadata
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
-import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.session.MediaController
-import androidx.media3.session.MediaSession
 import androidx.media3.session.SessionToken
 import com.google.common.util.concurrent.MoreExecutors
 import data.model.Song
@@ -20,7 +21,8 @@ import org.easyprog.musicapp.extension.currentPositionFlow
 
 class AndroidAudioPlayerController(context: Context) : AudioPlayerController {
 
-    private val sessionToken = SessionToken(context, ComponentName(context, PlaybackService::class.java))
+    private val sessionToken =
+        SessionToken(context, ComponentName(context, PlaybackService::class.java))
     private val controllerFeature = MediaController.Builder(context, sessionToken).buildAsync()
     private var mediaPlayer: MediaController? = null
 
@@ -29,11 +31,11 @@ class AndroidAudioPlayerController(context: Context) : AudioPlayerController {
         controllerFeature.addListener({
             mediaPlayer = controllerFeature.get()
         }, MoreExecutors.directExecutor())
-        val mediaItems: List<MediaItem> = songs.map { song -> MediaItem.fromUri(url) }
+
         mediaPlayer?.addListener(object : Player.Listener {
             override fun onPlaybackStateChanged(playbackState: Int) {
                 super.onPlaybackStateChanged(playbackState)
-                when(playbackState) {
+                when (playbackState) {
                     Player.STATE_READY -> listener.onReady()
                 }
             }
@@ -49,6 +51,19 @@ class AndroidAudioPlayerController(context: Context) : AudioPlayerController {
             }
 
         })
+
+        val mediaItems: List<MediaItem> = songs.mapIndexed { index, song ->
+            MediaItem.Builder()
+                .setMediaId("media-$index")
+                .setUri(Uri.parse(song.urlMusic))
+                .setMediaMetadata(
+                    MediaMetadata.Builder()
+                        .setArtist(song.artist)
+                        .setTitle(song.title)
+                        .setArtworkUri(Uri.parse(song.urlImage))
+                        .build()
+                ).build()
+        }
 
         mediaPlayer?.setMediaItems(mediaItems)
         mediaPlayer?.prepare()
@@ -71,13 +86,12 @@ class AndroidAudioPlayerController(context: Context) : AudioPlayerController {
     }
 
     override fun getFullTime(): Long {
-        return if (mediaPlayer?.playbackState == Player.STATE_READY) {
-            mediaPlayer?.duration ?: 0L
-        } else 0L
+        return mediaPlayer?.duration ?: 0L
     }
 
     override fun release() {
-        mediaPlayer?.release()
+        MediaController.releaseFuture(controllerFeature)
+        mediaPlayer = null
     }
 
     override fun changeSong(indexSong: Int) {
