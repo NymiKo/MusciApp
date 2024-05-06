@@ -1,9 +1,10 @@
 package audio_player
 
+import data.model.Song
 import kotlinx.coroutines.flow.Flow
 
 interface AudioPlayerController {
-    fun prepare(urls: List<String>, listener: AudioPlayerListener)
+    fun prepare(songs: List<Song>, listener: AudioPlayerListener)
     fun start()
     fun pause()
     fun stop()
