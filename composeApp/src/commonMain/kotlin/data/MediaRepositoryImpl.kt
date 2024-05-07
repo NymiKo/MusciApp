@@ -12,6 +12,6 @@ class MediaRepositoryImpl(
 ): MediaRepository {
     override suspend fun getSongsList(): List<Song> = withContext(Dispatchers.IO) {
         val response = httpClient.get("http://f0862137.xsph.ru/musicApp/getSongs.php").body<List<Song>>()
-        return@withContext response.shuffled()
+        return@withContext response
     }
 }
