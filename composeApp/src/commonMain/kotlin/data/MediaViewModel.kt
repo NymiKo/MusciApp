@@ -39,12 +39,12 @@ class MediaViewModel(
         viewModelScope.launch {
             val result = repository.getSongsList()
             _songsListFLow.value = result
-            playSong()
+            playSong(result)
         }
     }
 
-    private fun playSong() {
-        audioPlayerController.prepare(_songsListFLow.value, listener = object : AudioPlayerListener {
+    private fun playSong(songsList: List<Song>) {
+        audioPlayerController.prepare(songsList, listener = object : AudioPlayerListener {
             override fun onReady() {
                 _fullTimeSong.value = audioPlayerController.getFullTime()
                 viewModelScope.launch {
@@ -104,7 +104,7 @@ class MediaViewModel(
 
     fun scrollToSong(indexSong: Int) {
         _currentPlayingSongIndex.value = indexSong
-        audioPlayerController.changeSong(_currentPlayingSongIndex.value)
+        audioPlayerController.changeSong(indexSong)
     }
 
     fun releasePlayer() {

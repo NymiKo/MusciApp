@@ -1,6 +1,8 @@
 package org.easyprog.musicapp.ui.screens.player_view
 
-import androidx.compose.animation.core.animateSizeAsState
+import android.graphics.RenderEffect
+import android.graphics.Shader
+import android.os.Build
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -8,15 +10,14 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
@@ -25,6 +26,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Loop
 import androidx.compose.material.icons.filled.PauseCircle
+import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.PlayCircle
 import androidx.compose.material.icons.filled.Shuffle
 import androidx.compose.material.icons.filled.SkipNext
@@ -48,12 +50,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asComposeRenderEffect
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.TextUnitType
@@ -177,7 +180,12 @@ private fun PlayerScreen(
             changeTime = changeTime::invoke
         )
 
-        Spacer(modifier = Modifier.weight(1F))
+        SongsListColumn(
+            modifier = Modifier.padding(top = 16.dp).weight(1F),
+            songsList = songsList,
+            currentPlayingSongIndex = currentPlayingSongIndex,
+            scrollToSong = scrollToSong::invoke
+        )
 
         PlayerControlRow(
             currentPlayingSongIndex = currentPlayingSongIndex,
@@ -204,8 +212,7 @@ fun DetailsMediaComponent(
     Column(
         modifier = modifier.clip(RoundedCornerShape(bottomStart = 50.dp, bottomEnd = 50.dp))
             .background(Brush.verticalGradient(listOf(PurpleLight, PurpleDark)))
-            .padding(bottom = 16.dp),
-        verticalArrangement = Arrangement.spacedBy(32.dp)
+            .padding(bottom = 16.dp)
     ) {
         ArtworkMediaHorizontalPager(
             pagerState = pagerState,
@@ -234,11 +241,10 @@ fun ArtworkMediaHorizontalPager(
     artworkUrls: List<String>
 ) {
     HorizontalPager(
-        modifier = modifier.padding(top = 16.dp).fillMaxWidth().height(200.dp),
+        modifier = modifier.padding(vertical = 16.dp).fillMaxWidth().height(200.dp),
         state = pagerState,
-        pageSpacing = 16.dp,
-        beyondBoundsPageCount = 2,
-        contentPadding = PaddingValues(horizontal = 80.dp)
+        pageSpacing = 1.dp,
+        beyondBoundsPageCount = 2
     ) { page ->
         ArtworkMediaItem(
             pagerState = pagerState,
@@ -259,15 +265,33 @@ fun ArtworkMediaItem(
     Box(modifier = modifier.fillMaxSize()) {
         AsyncImage(
             modifier = Modifier.fillMaxHeight().align(Alignment.Center)
-                .clip(CircleShape)
                 .graphicsLayer {
-                    val pageOffset = ((pagerState.currentPage - page) + pagerState.currentPageOffsetFraction).absoluteValue
+                    val pageOffset =
+                        (pagerState.currentPage - page) + pagerState.currentPageOffsetFraction
+                    translationX = size.width * (pageOffset * .99f)
+
                     alpha = lerp(
-                        start = 0.5F,
-                        stop = 1F,
-                        fraction = 1F - pageOffset.coerceIn(0F, 1F)
+                        start = 0.4f,
+                        stop = 1f,
+                        fraction = 1f - pageOffset.absoluteValue.coerceIn(0f, 1f),
                     )
-                },
+                    val blur = (pageOffset * 20f).coerceAtLeast(0.1f)
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                        renderEffect = RenderEffect
+                            .createBlurEffect(
+                                blur, blur, Shader.TileMode.DECAL
+                            ).asComposeRenderEffect()
+                    }
+
+                    lerp(
+                        start = 0.5f,
+                        stop = 1f,
+                        fraction = 1f - pageOffset.absoluteValue.coerceIn(0f, 1f),
+                    ).also { scale ->
+                        scaleX = scale
+                        scaleY = scale
+                    }
+                }.clip(CircleShape),
             model = artworkUrl,
             contentDescription = null,
             contentScale = ContentScale.Fit
@@ -292,7 +316,10 @@ fun RowTimeAndNameDetailMedia(
             }"
         )
 
-        ArtistAndNameMediaColumn(modifier = Modifier.weight(1F), song = song)
+        ArtistAndNameMediaColumn(
+            modifier = Modifier.weight(1F).height(50.dp),
+            song = song,
+        )
 
         TimeText(
             text = "${fullTime.toMinutes()}:${fullTime.toSeconds().toString().padStart(2, '0')}"
@@ -306,7 +333,7 @@ fun ArtistAndNameMediaColumn(
     song: Song
 ) {
     Column(
-        modifier = modifier,
+        modifier = modifier.padding(horizontal = 16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         DefaultText(
@@ -336,7 +363,7 @@ fun TimeMediaSlider(
     val interactionSource = remember { MutableInteractionSource() }
 
     Slider(
-        modifier = Modifier.padding(horizontal = 24.dp).fillMaxWidth(),
+        modifier = modifier.padding(horizontal = 24.dp).fillMaxWidth(),
         value = currentTime,
         onValueChange = { changeTime(it) },
         interactionSource = interactionSource,
@@ -346,8 +373,8 @@ fun TimeMediaSlider(
                 modifier = Modifier.scale(scaleX = 1F, scaleY = 0.5F),
                 sliderState = sliderState,
                 colors = customSliderColors(
-                    activeTrackColor = Color.White,
-                    inactiveTrackColor = Color.Gray.copy(alpha = 0.4F)
+                    activeTrackColor = Purple,
+                    inactiveTrackColor = Color.White
                 )
             )
         },
@@ -362,6 +389,89 @@ fun TimeMediaSlider(
             )
         }
     )
+}
+
+@Composable
+fun SongsListColumn(
+    modifier: Modifier = Modifier,
+    songsList: List<Song>,
+    currentPlayingSongIndex: Int,
+    scrollToSong: (page: Int) -> Unit
+) {
+    LazyColumn(
+        modifier = modifier,
+        verticalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+        items(songsList.size) {
+            SongItem(
+                modifier = Modifier.clickable {
+                    scrollToSong(it)
+                },
+                song = songsList[it],
+                isPlaying = currentPlayingSongIndex == it
+            )
+        }
+    }
+}
+
+@Composable
+fun SongItem(
+    modifier: Modifier = Modifier,
+    song: Song,
+    isPlaying: Boolean
+) {
+    Row(
+        modifier = modifier
+            .padding(horizontal = 24.dp)
+            .fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+        Column(
+            modifier = Modifier.weight(1F),
+            verticalArrangement = Arrangement.spacedBy(4.dp)
+        ) {
+            DefaultText(
+                text = song.title,
+                color = MaterialTheme.colorScheme.secondary,
+                letterSpacing = TextUnit(-0.5F, TextUnitType.Sp),
+                fontSize = 20.sp,
+                textAlign = TextAlign.Start
+            )
+
+            DefaultText(
+                text = song.artist,
+                color = Color.Gray,
+                letterSpacing = TextUnit(-0.5F, TextUnitType.Sp),
+                fontSize = 16.sp,
+                textAlign = TextAlign.Start
+            )
+        }
+
+        NowPlayingSong(modifier = Modifier.align(Alignment.Bottom), isPlaying = isPlaying)
+    }
+}
+
+@Composable
+fun NowPlayingSong(
+    modifier: Modifier = Modifier,
+    isPlaying: Boolean
+) {
+    if (isPlaying) {
+        DefaultText(
+            modifier = modifier,
+            text = "Сейчас играет",
+            color = Color.White,
+            letterSpacing = TextUnit(-0.5F, TextUnitType.Sp),
+            fontSize = 16.sp
+        )
+    } else {
+        Icon(
+            modifier = modifier.size(20.dp).clip(CircleShape).background(Color.Gray),
+            imageVector = Icons.Default.PlayArrow,
+            contentDescription = null,
+            tint = Color.Black
+        )
+    }
 }
 
 @OptIn(ExperimentalFoundationApi::class)
