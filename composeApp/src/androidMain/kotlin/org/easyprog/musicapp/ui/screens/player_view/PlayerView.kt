@@ -67,6 +67,8 @@ import androidx.compose.ui.util.lerp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
+import audio_player.AudioPlayerState
+import audio_player.AudioPlayerUiState
 import coil3.compose.AsyncImage
 import custom_elements.slider.customSliderColors
 import custom_elements.text.DefaultText
@@ -85,11 +87,9 @@ fun PlayerComponent(
     lifecycleOwner: LifecycleOwner = LocalLifecycleOwner.current,
     viewModel: MediaViewModel
 ) {
-    val currentPlayingSongIndex by viewModel.currentPlayingSongIndex.collectAsState()
-    val currentTime by viewModel.currentTime.collectAsState()
+    val audioPlayerUiState = viewModel.audioPlayerUiState
     val songsList by viewModel.songsListFLow.collectAsState()
-    val isPlaying by viewModel.isPlaying.collectAsState()
-    val fullTime by viewModel.fullTimeSong.collectAsState()
+
 
     DisposableEffect(lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
@@ -111,10 +111,10 @@ fun PlayerComponent(
         PlayerScreen(
             modifier = modifier,
             songsList = songsList,
-            currentPlayingSongIndex = currentPlayingSongIndex,
-            currentTime = currentTime,
-            fullTime = fullTime,
-            isPlaying = isPlaying,
+            currentPlayingSongIndex = audioPlayerUiState.currentPosition,
+            currentTime = audioPlayerUiState.currentTime.toFloat(),
+            fullTime = audioPlayerUiState.totalTime,
+            isPlaying = audioPlayerUiState.playerState == AudioPlayerState.PLAYING,
             changeTime = viewModel::changeTime,
             prevSong = viewModel::prevSong,
             pauseOrPlay = viewModel::pauseOrPlay,

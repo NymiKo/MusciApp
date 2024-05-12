@@ -1,5 +1,6 @@
 package org.easyprog.musicapp.ui
 
+import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -21,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import audio_player.PlaybackService
 import org.easyprog.musicapp.ui.screens.player_view.PlayerComponent
 import org.koin.android.ext.android.getKoin
 
@@ -61,10 +63,10 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
-}
 
-@Preview
-@Composable
-fun AppAndroidPreview() {
+    override fun onDestroy() {
+        super.onDestroy()
 
+        stopService(Intent(this, PlaybackService::class.java))
+    }
 }
