@@ -5,8 +5,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.sp
-import utils.toMinutes
-import utils.toSeconds
 
 @Composable
 fun TimeText(

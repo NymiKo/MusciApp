@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
@@ -72,15 +73,12 @@ import custom_elements.text.DefaultText
 import custom_elements.text.TimeText
 import data.MediaViewModel
 import data.model.Song
-import kotlinx.coroutines.launch
 import org.easyprog.musicapp.ui.Purple
 import org.easyprog.musicapp.ui.PurpleDark
 import org.easyprog.musicapp.ui.PurpleLight
-import utils.toMinutes
-import utils.toSeconds
+import utils.toTimeString
 import kotlin.math.absoluteValue
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun PlayerComponent(
     modifier: Modifier = Modifier,
@@ -161,16 +159,6 @@ private fun PlayerScreen(
     ) {
         val pagerState = rememberPagerState(pageCount = { songsList.size })
 
-        LaunchedEffect(pagerState) {
-            snapshotFlow { pagerState.currentPage }.collect { page ->
-                scrollToSong(page)
-            }
-        }
-
-        LaunchedEffect(currentPlayingSongIndex) {
-            pagerState.animateScrollToPage(currentPlayingSongIndex)
-        }
-
         DetailsMediaComponent(
             pagerState = pagerState,
             songsList = songsList,
@@ -190,7 +178,6 @@ private fun PlayerScreen(
         PlayerControlRow(
             currentPlayingSongIndex = currentPlayingSongIndex,
             isPlaying = isPlaying,
-            pagerState = pagerState,
             nextSong = nextSong::invoke,
             pauseOrPlay = pauseOrPlay::invoke,
             prevSong = prevSong::invoke
@@ -216,7 +203,8 @@ fun DetailsMediaComponent(
     ) {
         ArtworkMediaHorizontalPager(
             pagerState = pagerState,
-            artworkUrls = songsList.map { it.urlImage }
+            artworkUrls = songsList.map { it.urlImage },
+            currentPlayingSongIndex = currentPlayingSongIndex
         )
 
         RowTimeAndNameDetailMedia(
@@ -238,8 +226,13 @@ fun DetailsMediaComponent(
 fun ArtworkMediaHorizontalPager(
     modifier: Modifier = Modifier,
     pagerState: PagerState,
-    artworkUrls: List<String>
+    artworkUrls: List<String>,
+    currentPlayingSongIndex: Int
 ) {
+    LaunchedEffect(currentPlayingSongIndex) {
+        pagerState.animateScrollToPage(currentPlayingSongIndex)
+    }
+
     HorizontalPager(
         modifier = modifier.padding(vertical = 16.dp).fillMaxWidth().height(200.dp),
         state = pagerState,
@@ -311,9 +304,7 @@ fun RowTimeAndNameDetailMedia(
         verticalAlignment = Alignment.CenterVertically
     ) {
         TimeText(
-            text = "${currentTime.toLong().toMinutes()}:${
-                currentTime.toLong().toSeconds().toString().padStart(2, '0')
-            }"
+            text = currentTime.toLong().toTimeString()
         )
 
         ArtistAndNameMediaColumn(
@@ -322,7 +313,7 @@ fun RowTimeAndNameDetailMedia(
         )
 
         TimeText(
-            text = "${fullTime.toMinutes()}:${fullTime.toSeconds().toString().padStart(2, '0')}"
+            text = fullTime.toTimeString()
         )
     }
 }
@@ -474,19 +465,15 @@ fun NowPlayingSong(
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun PlayerControlRow(
     modifier: Modifier = Modifier,
-    pagerState: PagerState,
     currentPlayingSongIndex: Int,
     isPlaying: Boolean,
     prevSong: () -> Unit,
     pauseOrPlay: () -> Unit,
     nextSong: () -> Unit
 ) {
-    val coroutineScope = rememberCoroutineScope()
-
     Row(
         modifier = modifier.padding(8.dp).fillMaxWidth().shadow(4.dp, CircleShape)
             .background(MaterialTheme.colorScheme.primary, CircleShape).padding(4.dp),
@@ -507,9 +494,6 @@ fun PlayerControlRow(
             modifier = Modifier.size(35.dp)
                 .clickable {
                     prevSong()
-                    coroutineScope.launch {
-                        pagerState.animateScrollToPage(currentPlayingSongIndex)
-                    }
                 },
             imageVector = Icons.Default.SkipPrevious,
             contentDescription = null,
@@ -530,9 +514,6 @@ fun PlayerControlRow(
             modifier = Modifier.size(35.dp)
                 .clickable {
                     nextSong()
-                    coroutineScope.launch {
-                        pagerState.animateScrollToPage(currentPlayingSongIndex)
-                    }
                 },
             imageVector = Icons.Filled.SkipNext,
             contentDescription = null,

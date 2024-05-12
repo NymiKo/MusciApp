@@ -89,7 +89,7 @@ class MediaViewModel(
             _currentPlayingSongIndex.value = 0
         } else {
             _currentPlayingSongIndex.value++
-            audioPlayerController.changeSong(_currentPlayingSongIndex.value)
+            audioPlayerController.play(_currentPlayingSongIndex.value)
         }
     }
 
@@ -98,13 +98,13 @@ class MediaViewModel(
             _currentPlayingSongIndex.value = 0
         } else {
             _currentPlayingSongIndex.value--
-            audioPlayerController.changeSong(_currentPlayingSongIndex.value)
+            audioPlayerController.play(_currentPlayingSongIndex.value)
         }
     }
 
     fun scrollToSong(indexSong: Int) {
         _currentPlayingSongIndex.value = indexSong
-        audioPlayerController.changeSong(indexSong)
+        audioPlayerController.play(indexSong)
     }
 
     fun releasePlayer() {
