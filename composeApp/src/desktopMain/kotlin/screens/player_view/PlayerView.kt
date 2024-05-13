@@ -53,7 +53,7 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
-import data.MediaViewModel
+import ui.player.MediaViewModel
 import koin
 import custom_elements.slider.customSliderColors
 import custom_elements.text.DefaultText

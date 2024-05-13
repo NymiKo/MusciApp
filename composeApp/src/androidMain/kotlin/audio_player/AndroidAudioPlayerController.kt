@@ -12,12 +12,13 @@ import androidx.media3.session.SessionToken
 import com.google.common.util.concurrent.ListenableFuture
 import com.google.common.util.concurrent.MoreExecutors
 import data.model.Song
+import data.model.SongMetadata
 
 class AndroidAudioPlayerController(context: Context) : AudioPlayerController {
 
 
     private val controllerFeature: ListenableFuture<MediaController>
-    private val mediaPlayer: MediaController? get() = if (controllerFeature.isDone && !controllerFeature.isCancelled) controllerFeature.get() else null
+    private val mediaPlayer: MediaController? get() = if (controllerFeature.isDone) controllerFeature.get() else null
 
     override var audioControllerCallback: (
         (

@@ -2,8 +2,10 @@ package audio_player
 
 import android.content.Intent
 import androidx.media3.common.AudioAttributes
+import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
+import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.util.EventLogger
 import androidx.media3.session.MediaSession
@@ -16,10 +18,13 @@ class MediaService : MediaSessionService() {
 
     override fun onCreate() {
         super.onCreate()
-        val player = ExoPlayer.Builder(this).setAudioAttributes(AudioAttributes.DEFAULT, true).build()
+        val audioAttributes = AudioAttributes.Builder().setContentType(C.AUDIO_CONTENT_TYPE_MUSIC).setUsage(C.USAGE_MEDIA).build()
+        val player = ExoPlayer.Builder(this)
+            .setAudioAttributes(audioAttributes, true).setHandleAudioBecomingNoisy(true).build()
         player.addAnalyticsListener(EventLogger())
 
-        mediaSession = MediaSession.Builder(this, player).setCallback(MediaSessionServiceCallback()).build()
+        mediaSession =
+            MediaSession.Builder(this, player).setCallback(MediaSessionServiceCallback()).build()
     }
 
     override fun onTaskRemoved(rootIntent: Intent?) {
@@ -41,7 +46,7 @@ class MediaService : MediaSessionService() {
     override fun onGetSession(controllerInfo: MediaSession.ControllerInfo): MediaSession? =
         mediaSession
 
-    private inner class MediaSessionServiceCallback: MediaSession.Callback {
+    private inner class MediaSessionServiceCallback : MediaSession.Callback {
         override fun onAddMediaItems(
             mediaSession: MediaSession,
             controller: MediaSession.ControllerInfo,
@@ -53,5 +58,10 @@ class MediaService : MediaSessionService() {
 
             return Futures.immediateFuture(updatedMediaItem)
         }
+    }
+
+    @UnstableApi
+    private inner class MediaSessionServiceListener: Listener {
+
     }
 }

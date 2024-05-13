@@ -17,7 +17,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.WindowState
 import androidx.compose.ui.window.application
-import data.di.commonModule
+import di.commonModule
 import org.koin.core.Koin
 import org.koin.core.context.startKoin
 import screens.TrendsScreen

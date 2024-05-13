@@ -40,8 +40,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -69,7 +67,7 @@ import coil3.compose.AsyncImage
 import custom_elements.slider.customSliderColors
 import custom_elements.text.DefaultText
 import custom_elements.text.TimeText
-import data.MediaViewModel
+import ui.player.MediaViewModel
 import data.model.Song
 import org.easyprog.musicapp.ui.theme.Purple
 import org.easyprog.musicapp.ui.theme.PurpleDark
@@ -83,15 +81,8 @@ fun PlayerComponent(
     lifecycleOwner: LifecycleOwner = LocalLifecycleOwner.current,
     viewModel: MediaViewModel
 ) {
-    val audioPlayerUiState = viewModel.audioPlayerUiState
-    val songsList by viewModel.songsListFLow.collectAsState()
-
-
     DisposableEffect(lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
-            if (event == Lifecycle.Event.ON_RESUME) {
-                viewModel.playSong()
-            }
             if (event == Lifecycle.Event.ON_STOP) {
                 viewModel.releasePlayer()
             }
@@ -104,12 +95,14 @@ fun PlayerComponent(
         }
     }
 
-    if (songsList.isEmpty()) {
+    val audioPlayerUiState = viewModel.audioPlayerUiState
+
+    if (audioPlayerUiState.songList.isEmpty()) {
         BoxLoading()
     } else {
         PlayerScreen(
             modifier = modifier,
-            songsList = songsList,
+            songsList = audioPlayerUiState.songList,
             currentPlayingSongIndex = audioPlayerUiState.currentPosition,
             currentTime = audioPlayerUiState.currentTime.toFloat(),
             fullTime = audioPlayerUiState.totalTime,
@@ -405,7 +398,7 @@ fun SongsListColumn(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        items(count = songsList.size, key = { songsList[it].id }) { index ->
+        items(count = songsList.size) { index ->
             SongItem(
                 modifier = Modifier.clickable {
                     scrollToSong(index)
