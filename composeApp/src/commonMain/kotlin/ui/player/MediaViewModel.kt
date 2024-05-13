@@ -17,7 +17,7 @@ class MediaViewModel(
     private val audioPlayerController: AudioPlayerController
 ) : ViewModel() {
 
-    var audioPlayerUiState by mutableStateOf(AudioPlayerUiState())
+    var playerUiState by mutableStateOf(PlayerScreenUiState())
         private set
 
     init {
@@ -25,21 +25,20 @@ class MediaViewModel(
     }
 
     private fun loadSongsList() {
+        playerUiState = playerUiState.copy(loading = true)
         viewModelScope.launch {
             val result = repository.getSongsList()
             audioPlayerController.addMediaItems(result)
-            audioPlayerUiState = audioPlayerUiState.copy(songList = result)
+            playerUiState = playerUiState.copy(loading = false, songList = result)
         }
     }
 
-    fun pauseOrPlay() {
-        if (audioPlayerUiState.playerState == AudioPlayerState.PLAYING) {
-            audioPlayerController.pause()
-            audioPlayerUiState = audioPlayerUiState.copy(playerState = AudioPlayerState.PAUSED)
-        } else {
-            audioPlayerController.resume()
-            audioPlayerUiState = audioPlayerUiState.copy(playerState = AudioPlayerState.PLAYING)
-        }
+    fun resume() {
+        audioPlayerController.resume()
+    }
+
+    fun pause() {
+        audioPlayerController.pause()
     }
 
     fun changeTime(time: Float) {
@@ -55,7 +54,6 @@ class MediaViewModel(
     }
 
     fun scrollToSong(indexSong: Int) {
-        audioPlayerUiState = audioPlayerUiState.copy(currentPosition = indexSong)
         audioPlayerController.play(indexSong)
     }
 
@@ -65,9 +63,5 @@ class MediaViewModel(
 
     fun changeShuffleMode() {
         audioPlayerController.changeShuffleMode()
-    }
-
-    fun releasePlayer() {
-        audioPlayerController.release()
     }
 }

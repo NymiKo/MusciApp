@@ -7,16 +7,16 @@ import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.activity.viewModels
 import androidx.navigation.compose.rememberNavController
 import audio_player.MediaService
 import navigation.AppNavHost
 import org.easyprog.musicapp.ui.theme.AppTheme
 import org.koin.android.ext.android.getKoin
+import org.koin.androidx.viewmodel.ext.android.viewModel
 import ui.SharedViewModel
 
 class MainActivity : ComponentActivity() {
-    private val sharedViewModel: SharedViewModel by viewModels()
+    private val sharedViewModel: SharedViewModel by viewModel()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,7 +30,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             val navController = rememberNavController()
             AppTheme {
-                AppNavHost(navController = navController, sharedViewModel = getKoin().get())
+                AppNavHost(navController = navController, sharedViewModel = sharedViewModel)
             }
         }
     }

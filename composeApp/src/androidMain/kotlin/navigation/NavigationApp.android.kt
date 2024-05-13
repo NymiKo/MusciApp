@@ -4,10 +4,9 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import org.easyprog.musicapp.ui.screens.player_view.PlayerScreen
+import org.easyprog.musicapp.ui.screens.player.PlayerScreen
 import org.koin.androidx.compose.koinViewModel
-import org.koin.java.KoinJavaComponent
-import org.koin.java.KoinJavaComponent.getKoin
+import org.koin.compose.koinInject
 import ui.SharedViewModel
 import ui.player.MediaViewModel
 
