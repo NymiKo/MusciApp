@@ -15,7 +15,7 @@
         android:supportsRtl="true"
         android:theme="@android:style/Theme.Material.Light.NoActionBar">
         <service
-            android:name="audio_player.PlaybackService"
+            android:name="audio_player.MediaService"
             android:foregroundServiceType="mediaPlayback"
             android:exported="true">
             <intent-filter>

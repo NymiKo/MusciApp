@@ -22,5 +22,7 @@ interface AudioPlayerController {
     fun prevSong()
     fun seekTo(time: Long)
     fun release()
+    fun changeShuffleMode()
+    fun changeRepeatMode()
     fun getCurrentTime(): Long
 }

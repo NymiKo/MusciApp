@@ -36,11 +36,10 @@ class MediaViewModel(
             val result = repository.getSongsList()
             _songsListFLow.value = result
             audioPlayerController.addMediaItems(result)
-            playSong()
         }
     }
 
-    private fun playSong() {
+    fun playSong() {
         audioControllerCallback { playerState, currentPosition, currentTime, totalTime, isShuffle, isRepeat ->
             audioPlayerUiState = audioPlayerUiState.copy(
                 playerState = playerState,
@@ -61,7 +60,7 @@ class MediaViewModel(
                 }
             }
         }
-        audioPlayerController.play(audioPlayerUiState.currentPosition)
+        //audioPlayerController.play(audioPlayerUiState.currentPosition)
     }
 
     private fun audioControllerCallback(
@@ -92,28 +91,24 @@ class MediaViewModel(
     }
 
     fun nextSong() {
-        if (audioPlayerUiState.currentPosition == _songsListFLow.value.lastIndex) {
-            audioPlayerUiState = audioPlayerUiState.copy(currentPosition = 0)
-        } else {
-            val nextSongIndex = audioPlayerUiState.currentPosition.plus(1)
-            audioPlayerUiState = audioPlayerUiState.copy(currentPosition = nextSongIndex)
-            audioPlayerController.play(audioPlayerUiState.currentPosition)
-        }
+        audioPlayerController.nextSong()
     }
 
     fun prevSong() {
-        if (audioPlayerUiState.currentPosition == 0) {
-            audioPlayerUiState = audioPlayerUiState.copy(currentPosition = 0)
-        } else {
-            val prevSongIndex = audioPlayerUiState.currentPosition.minus(1)
-            audioPlayerUiState = audioPlayerUiState.copy(currentPosition = prevSongIndex)
-            audioPlayerController.prevSong()
-        }
+        audioPlayerController.prevSong()
     }
 
     fun scrollToSong(indexSong: Int) {
         audioPlayerUiState = audioPlayerUiState.copy(currentPosition = indexSong)
         audioPlayerController.play(indexSong)
+    }
+
+    fun changeRepeatMode() {
+        audioPlayerController.changeRepeatMode()
+    }
+
+    fun changeShuffleMode() {
+        audioPlayerController.changeShuffleMode()
     }
 
     fun releasePlayer() {

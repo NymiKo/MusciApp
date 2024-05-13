@@ -18,7 +18,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
@@ -44,8 +43,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -68,16 +65,15 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
 import audio_player.AudioPlayerState
-import audio_player.AudioPlayerUiState
 import coil3.compose.AsyncImage
 import custom_elements.slider.customSliderColors
 import custom_elements.text.DefaultText
 import custom_elements.text.TimeText
 import data.MediaViewModel
 import data.model.Song
-import org.easyprog.musicapp.ui.Purple
-import org.easyprog.musicapp.ui.PurpleDark
-import org.easyprog.musicapp.ui.PurpleLight
+import org.easyprog.musicapp.ui.theme.Purple
+import org.easyprog.musicapp.ui.theme.PurpleDark
+import org.easyprog.musicapp.ui.theme.PurpleLight
 import utils.toTimeString
 import kotlin.math.absoluteValue
 
@@ -93,6 +89,9 @@ fun PlayerComponent(
 
     DisposableEffect(lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_RESUME) {
+                viewModel.playSong()
+            }
             if (event == Lifecycle.Event.ON_STOP) {
                 viewModel.releasePlayer()
             }
@@ -115,11 +114,15 @@ fun PlayerComponent(
             currentTime = audioPlayerUiState.currentTime.toFloat(),
             fullTime = audioPlayerUiState.totalTime,
             isPlaying = audioPlayerUiState.playerState == AudioPlayerState.PLAYING,
+            isRepeatModeEnabled = audioPlayerUiState.isRepeat,
+            isShuffleModeEnabled = audioPlayerUiState.isShuffle,
             changeTime = viewModel::changeTime,
             prevSong = viewModel::prevSong,
             pauseOrPlay = viewModel::pauseOrPlay,
             nextSong = viewModel::nextSong,
-            scrollToSong = viewModel::scrollToSong
+            scrollToSong = viewModel::scrollToSong,
+            changeRepeatMode = viewModel::changeRepeatMode,
+            changeShuffleMode = viewModel::changeShuffleMode
         )
     }
 }
@@ -147,11 +150,15 @@ private fun PlayerScreen(
     currentTime: Float,
     fullTime: Long,
     isPlaying: Boolean,
+    isRepeatModeEnabled: Boolean,
+    isShuffleModeEnabled: Boolean,
     changeTime: (time: Float) -> Unit,
     prevSong: () -> Unit,
     pauseOrPlay: () -> Unit,
     nextSong: () -> Unit,
-    scrollToSong: (page: Int) -> Unit
+    scrollToSong: (page: Int) -> Unit,
+    changeRepeatMode: () -> Unit,
+    changeShuffleMode: () -> Unit
 ) {
     Column(
         modifier = modifier.fillMaxSize().background(MaterialTheme.colorScheme.background),
@@ -177,10 +184,15 @@ private fun PlayerScreen(
 
         PlayerControlRow(
             currentPlayingSongIndex = currentPlayingSongIndex,
+            lastSongIndex = songsList.lastIndex,
             isPlaying = isPlaying,
+            isRepeatModeEnabled = isRepeatModeEnabled,
+            isShuffleModeEnabled = isShuffleModeEnabled,
             nextSong = nextSong::invoke,
             pauseOrPlay = pauseOrPlay::invoke,
-            prevSong = prevSong::invoke
+            prevSong = prevSong::invoke,
+            changeRepeatMode = changeRepeatMode::invoke,
+            changeShuffleMode = changeShuffleMode::invoke
         )
     }
 }
@@ -393,13 +405,13 @@ fun SongsListColumn(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        items(songsList.size) {
+        items(count = songsList.size, key = { songsList[it].id }) { index ->
             SongItem(
                 modifier = Modifier.clickable {
-                    scrollToSong(it)
+                    scrollToSong(index)
                 },
-                song = songsList[it],
-                isPlaying = currentPlayingSongIndex == it
+                song = songsList[index],
+                isPlaying = currentPlayingSongIndex == index
             )
         }
     }
@@ -469,10 +481,15 @@ fun NowPlayingSong(
 fun PlayerControlRow(
     modifier: Modifier = Modifier,
     currentPlayingSongIndex: Int,
+    lastSongIndex: Int,
     isPlaying: Boolean,
+    isShuffleModeEnabled: Boolean,
+    isRepeatModeEnabled: Boolean,
     prevSong: () -> Unit,
     pauseOrPlay: () -> Unit,
-    nextSong: () -> Unit
+    nextSong: () -> Unit,
+    changeRepeatMode: () -> Unit,
+    changeShuffleMode: () -> Unit
 ) {
     Row(
         modifier = modifier.padding(8.dp).fillMaxWidth().shadow(4.dp, CircleShape)
@@ -483,11 +500,11 @@ fun PlayerControlRow(
         Icon(
             modifier = Modifier.size(25.dp)
                 .clickable {
-
+                    changeRepeatMode()
                 },
             imageVector = Icons.Default.Loop,
             contentDescription = null,
-            tint = MaterialTheme.colorScheme.secondary
+            tint = if (isRepeatModeEnabled) Purple else MaterialTheme.colorScheme.secondary
         )
 
         Icon(
@@ -497,7 +514,7 @@ fun PlayerControlRow(
                 },
             imageVector = Icons.Default.SkipPrevious,
             contentDescription = null,
-            tint = if (currentPlayingSongIndex == 0) Color.Gray else MaterialTheme.colorScheme.secondary
+            tint = if (currentPlayingSongIndex == 0 && !isRepeatModeEnabled) Color.Gray else MaterialTheme.colorScheme.secondary
         )
 
         Icon(
@@ -517,17 +534,17 @@ fun PlayerControlRow(
                 },
             imageVector = Icons.Filled.SkipNext,
             contentDescription = null,
-            tint = MaterialTheme.colorScheme.secondary
+            tint = if (currentPlayingSongIndex == lastSongIndex && !isRepeatModeEnabled) Color.Gray else MaterialTheme.colorScheme.secondary
         )
 
         Icon(
             modifier = Modifier.size(25.dp)
                 .clickable {
-
+                    changeShuffleMode()
                 },
             imageVector = Icons.Default.Shuffle,
             contentDescription = null,
-            tint = MaterialTheme.colorScheme.secondary
+            tint = if (isShuffleModeEnabled) Purple else MaterialTheme.colorScheme.secondary
         )
     }
 }

@@ -1,4 +1,4 @@
-package org.easyprog.musicapp.ui
+package org.easyprog.musicapp.ui.theme
 
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme

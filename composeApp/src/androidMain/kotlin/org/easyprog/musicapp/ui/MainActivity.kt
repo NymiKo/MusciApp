@@ -17,13 +17,12 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.toArgb
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import audio_player.PlaybackService
+import audio_player.MediaService
 import org.easyprog.musicapp.ui.screens.player_view.PlayerComponent
+import org.easyprog.musicapp.ui.theme.AppTheme
+import org.easyprog.musicapp.ui.theme.PurpleLight
 import org.koin.android.ext.android.getKoin
 
 class MainActivity : ComponentActivity() {
@@ -67,6 +66,6 @@ class MainActivity : ComponentActivity() {
     override fun onDestroy() {
         super.onDestroy()
 
-        stopService(Intent(this, PlaybackService::class.java))
+        stopService(Intent(this, MediaService::class.java))
     }
 }

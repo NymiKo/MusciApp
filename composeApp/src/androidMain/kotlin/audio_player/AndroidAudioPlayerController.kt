@@ -3,12 +3,10 @@ package audio_player
 import android.content.ComponentName
 import android.content.Context
 import android.net.Uri
-import androidx.annotation.OptIn
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
-import androidx.media3.common.util.UnstableApi
 import androidx.media3.session.MediaController
 import androidx.media3.session.SessionToken
 import com.google.common.util.concurrent.ListenableFuture
@@ -34,7 +32,7 @@ class AndroidAudioPlayerController(context: Context) : AudioPlayerController {
 
     init {
         val sessionToken =
-            SessionToken(context, ComponentName(context, PlaybackService::class.java))
+            SessionToken(context, ComponentName(context, MediaService::class.java))
         controllerFeature = MediaController.Builder(context, sessionToken).buildAsync()
         controllerFeature.addListener({ setController() }, MoreExecutors.directExecutor())
     }
@@ -51,7 +49,7 @@ class AndroidAudioPlayerController(context: Context) : AudioPlayerController {
                         currentPosition.coerceAtLeast(0L),
                         duration.coerceAtLeast(0L),
                         shuffleModeEnabled,
-                        repeatMode == Player.REPEAT_MODE_ONE
+                        repeatMode == Player.REPEAT_MODE_ALL
                     )
                 }
             }
@@ -59,9 +57,9 @@ class AndroidAudioPlayerController(context: Context) : AudioPlayerController {
     }
 
     override fun addMediaItems(songs: List<Song>) {
-        val mediaItems: List<MediaItem> = songs.mapIndexed { index, song ->
+        val mediaItems: List<MediaItem> = songs.map { song ->
             MediaItem.Builder()
-                .setMediaId("media-$index")
+                .setMediaId(song.urlMusic)
                 .setUri(Uri.parse(song.urlMusic))
                 .setMediaMetadata(
                     MediaMetadata.Builder()
@@ -73,6 +71,7 @@ class AndroidAudioPlayerController(context: Context) : AudioPlayerController {
         }
 
         mediaPlayer?.setMediaItems(mediaItems)
+        mediaPlayer?.prepare()
     }
 
     private fun Int.toPlayerState(isPlaying: Boolean): AudioPlayerState {
@@ -86,8 +85,7 @@ class AndroidAudioPlayerController(context: Context) : AudioPlayerController {
     override fun play(indexSong: Int) {
         mediaPlayer?.apply {
             seekToDefaultPosition(indexSong)
-            playWhenReady = false
-            prepare()
+            playWhenReady = true
         }
     }
 
@@ -101,23 +99,38 @@ class AndroidAudioPlayerController(context: Context) : AudioPlayerController {
 
     override fun nextSong() {
         mediaPlayer?.seekToNextMediaItem()
+        mediaPlayer?.playWhenReady = true
     }
 
     override fun prevSong() {
         mediaPlayer?.seekToPreviousMediaItem()
+        mediaPlayer?.playWhenReady = true
     }
 
     override fun seekTo(time: Long) {
         mediaPlayer?.seekTo(time)
     }
 
-    override fun release() {
-        MediaController.releaseFuture(controllerFeature)
-        audioControllerCallback = null
+    override fun changeShuffleMode() {
+        val shuffleMode = mediaPlayer?.shuffleModeEnabled ?: false
+        mediaPlayer?.shuffleModeEnabled = !shuffleMode
+    }
+
+    override fun changeRepeatMode() {
+        val repeatMode = mediaPlayer?.repeatMode ?: Player.REPEAT_MODE_OFF
+        if (repeatMode == Player.REPEAT_MODE_OFF) {
+            mediaPlayer?.repeatMode = Player.REPEAT_MODE_ALL
+        } else {
+            mediaPlayer?.repeatMode = Player.REPEAT_MODE_OFF
+        }
     }
 
     override fun getCurrentTime(): Long {
         return mediaPlayer?.currentPosition ?: 0
     }
 
+    override fun release() {
+        MediaController.releaseFuture(controllerFeature)
+        audioControllerCallback = null
+    }
 }
