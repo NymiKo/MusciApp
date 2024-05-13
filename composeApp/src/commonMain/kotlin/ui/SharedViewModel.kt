@@ -56,4 +56,8 @@ class SharedViewModel(
     ) {
         audioPlayerController.audioControllerCallback = callback
     }
+
+    fun releaseMediaPlayer() {
+        audioPlayerController.release()
+    }
 }

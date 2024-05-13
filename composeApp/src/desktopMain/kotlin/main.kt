@@ -17,7 +17,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.WindowState
 import androidx.compose.ui.window.application
-import di.commonModule
+import di.mediaControllerModule
 import org.koin.core.Koin
 import org.koin.core.context.startKoin
 import screens.TrendsScreen
@@ -28,7 +28,7 @@ lateinit var koin: Koin
 fun main() = application {
 
     koin = startKoin {
-        modules(commonModule)
+        modules(mediaControllerModule)
     }.koin
 
     Window(

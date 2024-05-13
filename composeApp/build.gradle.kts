@@ -49,6 +49,9 @@ kotlin {
             implementation(libs.kotlin.coroutines.core)
             implementation(libs.kotlin.coroutines.swing)
             implementation(libs.androidx.lifecycle.viewmodel)
+            implementation(libs.androidx.navigation)
+            implementation(libs.koin.compose)
+            implementation(libs.koin.androidx.compose)
         }
         desktopMain.dependencies {
             implementation(compose.desktop.currentOs)

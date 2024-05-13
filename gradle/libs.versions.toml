@@ -6,12 +6,13 @@ android-targetSdk = "34"
 androidx-activityCompose = "1.9.0"
 androidx-appcompat = "1.6.1"
 androidx-constraintlayout = "2.1.4"
-androidx-core-ktx = "1.13.0"
+androidx-core-ktx = "1.13.1"
 androidx-espresso-core = "3.5.1"
-androidx-material = "1.11.0"
+androidx-material = "1.12.0"
 androidx-test-junit = "1.1.5"
-androidx-lifecycle-viewmodel = "2.8.0-beta01"
-compose = "1.6.6"
+androidx-lifecycle-viewmodel = "2.8.0-rc01"
+androidx-navigation = "2.7.0-alpha03"
+compose = "1.6.7"
 compose-plugin = "1.6.0"
 junit = "4.13.2"
 kotlin = "1.9.22"
@@ -35,6 +36,7 @@ androidx-constraintlayout = { group = "androidx.constraintlayout", name = "const
 androidx-lifecycle-viewmodel = { module = "androidx.lifecycle:lifecycle-viewmodel", version.ref = "androidx-lifecycle-viewmodel" }
 androidx-lifecycle-viewmodel-ktx = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "androidx-lifecycle-viewmodel" }
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activityCompose" }
+androidx-navigation = { module = "org.jetbrains.androidx.navigation:navigation-compose", version.ref = "androidx-navigation" }
 compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling", version.ref = "compose" }
 compose-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview", version.ref = "compose" }
 coil = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" }
@@ -50,6 +52,8 @@ vlcj = { module = "uk.co.caprica:vlcj", version.ref = "vlcj" }
 koin-bom = { module = "io.insert-koin:koin-bom", version.ref = "koin" }
 koin-core = { module = "io.insert-koin:koin-core" }
 koin-android = { module = "io.insert-koin:koin-android" }
+koin-compose = { module = "io.insert-koin:koin-compose" }
+koin-androidx-compose = { module = "io.insert-koin:koin-androidx-compose" }
 media3-exo-player = { module = "androidx.media3:media3-exoplayer", version.ref = "media3-exo-palayer" }
 media3-session = { module = "androidx.media3:media3-session", version.ref = "media3-exo-palayer" }
 

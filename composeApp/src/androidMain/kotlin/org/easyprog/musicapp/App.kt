@@ -1,8 +1,10 @@
 package org.easyprog.musicapp
 
 import android.app.Application
-import di.commonModule
+import di.mediaControllerModule
 import di.ktorModule
+import di.repositoryModule
+import di.viewModelModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.startKoin
@@ -15,7 +17,7 @@ class App: Application() {
         startKoin {
             androidContext(this@App)
             androidLogger()
-            modules(commonModule, ktorModule)
+            modules(mediaControllerModule, ktorModule, repositoryModule, viewModelModule)
         }
     }
 

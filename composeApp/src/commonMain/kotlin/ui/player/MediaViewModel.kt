@@ -22,7 +22,6 @@ class MediaViewModel(
 
     init {
         loadSongsList()
-        playSong()
     }
 
     private fun loadSongsList() {
@@ -31,42 +30,6 @@ class MediaViewModel(
             audioPlayerController.addMediaItems(result)
             audioPlayerUiState = audioPlayerUiState.copy(songList = result)
         }
-    }
-
-    fun playSong() {
-        audioControllerCallback { playerState, currentPosition, currentTime, totalTime, isShuffle, isRepeat ->
-            audioPlayerUiState = audioPlayerUiState.copy(
-                playerState = playerState,
-                currentPosition = currentPosition,
-                currentTime = currentTime,
-                totalTime = totalTime,
-                isShuffle = isShuffle,
-                isRepeat = isRepeat
-            )
-
-            if (audioPlayerUiState.playerState == AudioPlayerState.PLAYING) {
-                viewModelScope.launch {
-                    while (true) {
-                        delay(500)
-                        audioPlayerUiState =
-                            audioPlayerUiState.copy(currentTime = audioPlayerController.getCurrentTime())
-                    }
-                }
-            }
-        }
-    }
-
-    private fun audioControllerCallback(
-        callback: (
-            playerState: AudioPlayerState,
-            currentPosition: Int,
-            currentTime: Long,
-            totalTime: Long,
-            isShuffle: Boolean,
-            isRepeat: Boolean
-        ) -> Unit
-    ) {
-        audioPlayerController.audioControllerCallback = callback
     }
 
     fun pauseOrPlay() {

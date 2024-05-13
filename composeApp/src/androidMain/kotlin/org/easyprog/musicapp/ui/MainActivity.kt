@@ -7,31 +7,20 @@ import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
+import androidx.activity.viewModels
+import androidx.navigation.compose.rememberNavController
 import audio_player.MediaService
-import org.easyprog.musicapp.ui.screens.player_view.PlayerComponent
+import navigation.AppNavHost
 import org.easyprog.musicapp.ui.theme.AppTheme
-import org.easyprog.musicapp.ui.theme.PurpleLight
 import org.koin.android.ext.android.getKoin
+import ui.SharedViewModel
 
 class MainActivity : ComponentActivity() {
+    private val sharedViewModel: SharedViewModel by viewModels()
 
-
-
-    @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         enableEdgeToEdge(
             navigationBarStyle = SystemBarStyle.light(
                 Color.TRANSPARENT,
@@ -39,29 +28,9 @@ class MainActivity : ComponentActivity() {
             )
         )
         setContent {
+            val navController = rememberNavController()
             AppTheme {
-                Scaffold(
-                    topBar = {
-                        TopAppBar(
-                            title = {},
-                            navigationIcon = {
-                                Icon(
-                                    modifier = Modifier.padding(8.dp).size(35.dp),
-                                    imageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
-                                    contentDescription = null,
-                                    tint = MaterialTheme.colorScheme.secondary
-                                )
-                            },
-                            colors = TopAppBarDefaults.topAppBarColors()
-                                .copy(containerColor = PurpleLight)
-                        )
-                    }
-                ) { paddingValues ->
-                    PlayerComponent(
-                        modifier = Modifier.padding(paddingValues),
-                        viewModel = getKoin().get()
-                    )
-                }
+                AppNavHost(navController = navController, sharedViewModel = getKoin().get())
             }
         }
     }
@@ -69,6 +38,7 @@ class MainActivity : ComponentActivity() {
     override fun onDestroy() {
         super.onDestroy()
 
+        sharedViewModel.releaseMediaPlayer()
         stopService(Intent(this, MediaService::class.java))
     }
 }
