@@ -6,10 +6,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import audio_player.AudioPlayerController
-import audio_player.AudioPlayerState
-import audio_player.AudioPlayerUiState
-import data.media.MediaRepository
-import kotlinx.coroutines.delay
+import data.player.MediaRepository
 import kotlinx.coroutines.launch
 
 class MediaViewModel(
@@ -31,6 +28,10 @@ class MediaViewModel(
             audioPlayerController.addMediaItems(result)
             playerUiState = playerUiState.copy(loading = false, songList = result)
         }
+    }
+
+    fun play(indexSong: Int) {
+        audioPlayerController.play(indexSong)
     }
 
     fun resume() {

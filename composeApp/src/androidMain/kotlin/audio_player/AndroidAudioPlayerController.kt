@@ -15,9 +15,7 @@ import data.model.Song
 import data.model.SongMetadata
 
 class AndroidAudioPlayerController(context: Context) : AudioPlayerController {
-
-
-    private val controllerFeature: ListenableFuture<MediaController>
+    private var controllerFeature: ListenableFuture<MediaController>
     private val mediaPlayer: MediaController? get() = if (controllerFeature.isDone) controllerFeature.get() else null
 
     override var audioControllerCallback: (
@@ -33,8 +31,8 @@ class AndroidAudioPlayerController(context: Context) : AudioPlayerController {
 
     init {
         val sessionToken =
-            SessionToken(context, ComponentName(context, MediaService::class.java))
-        controllerFeature = MediaController.Builder(context, sessionToken).buildAsync()
+            SessionToken(context.applicationContext, ComponentName(context.applicationContext, MediaService::class.java))
+        controllerFeature = MediaController.Builder(context.applicationContext, sessionToken).buildAsync()
         controllerFeature.addListener({ setController() }, MoreExecutors.directExecutor())
     }
 
@@ -73,6 +71,7 @@ class AndroidAudioPlayerController(context: Context) : AudioPlayerController {
 
         mediaPlayer?.setMediaItems(mediaItems)
         mediaPlayer?.prepare()
+        mediaPlayer?.playWhenReady = true
     }
 
     private fun Int.toPlayerState(isPlaying: Boolean): AudioPlayerState {
@@ -87,6 +86,7 @@ class AndroidAudioPlayerController(context: Context) : AudioPlayerController {
         mediaPlayer?.apply {
             seekToDefaultPosition(indexSong)
             playWhenReady = true
+            prepare()
         }
     }
 
@@ -99,13 +99,13 @@ class AndroidAudioPlayerController(context: Context) : AudioPlayerController {
     }
 
     override fun nextSong() {
-        mediaPlayer?.seekToNextMediaItem()
-        mediaPlayer?.playWhenReady = true
+        mediaPlayer?.seekToNext()
+        //mediaPlayer?.playWhenReady = true
     }
 
     override fun prevSong() {
-        mediaPlayer?.seekToPreviousMediaItem()
-        mediaPlayer?.playWhenReady = true
+        mediaPlayer?.seekToPrevious()
+        //mediaPlayer?.playWhenReady = true
     }
 
     override fun seekTo(time: Long) {

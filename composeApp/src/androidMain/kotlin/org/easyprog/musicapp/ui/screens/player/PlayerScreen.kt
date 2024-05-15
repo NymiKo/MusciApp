@@ -86,10 +86,8 @@ fun PlayerScreen(
     val playerScreenUiState = viewModel.playerUiState
 
     if (playerScreenUiState.loading) {
-        Log.e("STATE", audioPlayerUiState.toString())
         BoxLoading()
     } else {
-        Log.e("STATE_SCAFF", audioPlayerUiState.toString())
         Scaffold(
             topBar = {
                 TopAppBar(
@@ -437,7 +435,7 @@ fun SongItem(
             verticalArrangement = Arrangement.spacedBy(4.dp)
         ) {
             DefaultText(
-                text = song.title,
+                text = song.artist,
                 color = MaterialTheme.colorScheme.secondary,
                 letterSpacing = TextUnit(-0.5F, TextUnitType.Sp),
                 fontSize = 20.sp,
@@ -445,7 +443,7 @@ fun SongItem(
             )
 
             DefaultText(
-                text = song.artist,
+                text = song.title,
                 color = Color.Gray,
                 letterSpacing = TextUnit(-0.5F, TextUnitType.Sp),
                 fontSize = 16.sp,
