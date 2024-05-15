@@ -53,7 +53,7 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
-import ui.player.MediaViewModel
+import ui.player.PlayerViewModel
 import koin
 import custom_elements.slider.customSliderColors
 import custom_elements.text.DefaultText
@@ -63,7 +63,7 @@ import java.util.concurrent.TimeUnit
 @Composable
 fun PlayerComponent(
     modifier: Modifier = Modifier,
-    viewModel: MediaViewModel = koin.get()
+    viewModel: PlayerViewModel = koin.get()
 ) {
     val indexSong by viewModel.currentPlayingSongIndex.collectAsState()
     val currentTime by viewModel.currentTime.collectAsState()

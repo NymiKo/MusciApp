@@ -3,7 +3,6 @@ package org.easyprog.musicapp.ui.screens.player
 import android.graphics.RenderEffect
 import android.graphics.Shader
 import android.os.Build
-import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -68,7 +67,7 @@ import coil3.compose.AsyncImage
 import custom_elements.slider.customSliderColors
 import custom_elements.text.DefaultText
 import custom_elements.text.TimeText
-import ui.player.MediaViewModel
+import ui.player.PlayerViewModel
 import data.model.Song
 import org.easyprog.musicapp.ui.theme.Purple
 import org.easyprog.musicapp.ui.theme.PurpleDark
@@ -81,7 +80,7 @@ import kotlin.math.absoluteValue
 fun PlayerScreen(
     modifier: Modifier = Modifier,
     audioPlayerUiState: AudioPlayerUiState,
-    viewModel: MediaViewModel
+    viewModel: PlayerViewModel
 ) {
     val playerScreenUiState = viewModel.playerUiState
 

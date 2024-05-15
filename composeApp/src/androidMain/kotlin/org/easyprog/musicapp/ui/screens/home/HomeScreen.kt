@@ -6,6 +6,7 @@ import androidx.compose.animation.slideInHorizontally
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -24,10 +25,10 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.PlayCircleOutline
 import androidx.compose.material3.Icon
@@ -53,6 +54,8 @@ import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.util.lerp
+import androidx.media3.common.Player
+import audio_player.AudioPlayerState
 import audio_player.AudioPlayerUiState
 import coil3.compose.AsyncImage
 import custom_elements.text.DefaultText
@@ -60,20 +63,20 @@ import data.model.Artist
 import data.model.Song
 import org.easyprog.musicapp.ui.theme.PurpleDark
 import org.easyprog.musicapp.ui.theme.PurpleLight
-import ui.home.HomeViewModel
+import ui.home.HomeEvents
+import ui.home.HomeScreenUiState
 import kotlin.math.absoluteValue
 
 @Composable
 fun HomeScreen(
     modifier: Modifier = Modifier,
     audioPlayerUiState: AudioPlayerUiState,
-    viewModel: HomeViewModel
+    uiState: HomeScreenUiState,
+    onEvent: (HomeEvents) -> Unit
 ) {
-    val homeUiState = viewModel.homeScreenUiState
-
     Box(
         modifier = modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)
-            .statusBarsPadding()
+            .statusBarsPadding().navigationBarsPadding()
     ) {
         Column(
             modifier = Modifier.padding(top = 48.dp).fillMaxSize()
@@ -103,27 +106,46 @@ fun HomeScreen(
                     )
                 }
             }
-            LastSongsComponent(lastSongsList = homeUiState.lastSongsList)
-            ArtistsComponent(artistsList = homeUiState.artistsList)
+            LastSongsComponent(
+                lastSongsList = uiState.lastSongsList,
+                playSong = { song ->
+                    onEvent(HomeEvents.AddSongsToPlayer)
+                    onEvent(HomeEvents.OnSongSelected(song))
+                    onEvent(HomeEvents.PlaySong)
+                }
+            )
+            ArtistsComponent(artistsList = uiState.artistsList)
+            if (audioPlayerUiState.playerState != AudioPlayerState.STOPPED) {
+                Spacer(modifier = Modifier.fillMaxWidth().height(80.dp))
+            }
         }
-        BottomPlayerComponent(
-            modifier = Modifier.padding(8.dp).navigationBarsPadding().align(Alignment.BottomCenter),
-            songImage = ""
-        )
+        AnimatedVisibility(
+            modifier = Modifier.navigationBarsPadding().align(Alignment.BottomCenter),
+            visible = audioPlayerUiState.playerState != AudioPlayerState.STOPPED
+        ) {
+            if (uiState.selectedSong != null) {
+                BottomPlayerComponent(
+                    songImage = uiState.selectedSong.urlImage,
+                    playerState = audioPlayerUiState.playerState,
+                    onEvent = onEvent::invoke
+                )
+            }
+        }
     }
 }
 
 @Composable
 private fun LastSongsComponent(
     modifier: Modifier = Modifier,
-    lastSongsList: List<Song>
+    lastSongsList: List<Song>,
+    playSong: (song: Song) -> Unit
 ) {
     Column(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(32.dp)
     ) {
         NameCategory(text = "Новые 10 песен")
-        HorizontalPagerLastSongs(songList = lastSongsList)
+        HorizontalPagerLastSongs(songList = lastSongsList, playSong = playSong::invoke)
     }
 }
 
@@ -140,7 +162,11 @@ private fun NameCategory(modifier: Modifier = Modifier, text: String) {
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-private fun HorizontalPagerLastSongs(modifier: Modifier = Modifier, songList: List<Song>) {
+private fun HorizontalPagerLastSongs(
+    modifier: Modifier = Modifier,
+    songList: List<Song>,
+    playSong: (song: Song) -> Unit
+) {
     val horizontalState = rememberPagerState(
         initialPage = 0,
         initialPageOffsetFraction = 0F,
@@ -155,7 +181,7 @@ private fun HorizontalPagerLastSongs(modifier: Modifier = Modifier, songList: Li
         beyondBoundsPageCount = 5
     ) {
         LastSongItem(
-            modifier = Modifier.size(pageSize),
+            modifier = Modifier.size(pageSize).clickable { playSong(songList[it]) },
             song = songList[it],
             pagerState = horizontalState,
             indexPage = it
@@ -178,7 +204,6 @@ private fun LastSongItem(
     Box(
         modifier = modifier
             .clip(RoundedCornerShape(24.dp))
-            .clickable { }
             .graphicsLayer {
                 alpha =
                     lerp(
@@ -225,7 +250,7 @@ private fun LastSongItem(
 @Composable
 private fun NameSong(modifier: Modifier = Modifier, title: String) {
     Row(
-        modifier = modifier.padding(horizontal = 16.dp).padding(bottom = 24.dp).fillMaxWidth(),
+        modifier = modifier.padding(horizontal = 16.dp).padding(bottom = 16.dp).fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically
     ) {
         DefaultText(
@@ -295,24 +320,28 @@ fun ArtistItem(modifier: Modifier = Modifier, artistImage: String, artistName: S
 }
 
 @Composable
-fun BottomPlayerComponent(modifier: Modifier = Modifier, songImage: String) {
+fun BottomPlayerComponent(modifier: Modifier = Modifier, songImage: String, playerState: AudioPlayerState, onEvent: (HomeEvents) -> Unit) {
     Row(
-        modifier = modifier.fillMaxWidth().height(70.dp).clip(CircleShape).background(PurpleDark)
-            .padding(start = 4.dp, end = 16.dp),
+        modifier = modifier.fillMaxWidth().height(70.dp)
+            .clip(RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp)).background(PurpleDark)
+            .padding(start = 8.dp, end = 16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         AsyncImage(
-            modifier = Modifier.size(60.dp).clip(CircleShape),
+            modifier = Modifier.size(55.dp).clip(RoundedCornerShape(16.dp)),
             model = songImage,
             contentDescription = null
         )
         Spacer(modifier = Modifier.weight(1F))
         Icon(
-            modifier = Modifier.size(50.dp)
-                .clickable {
-
-                },
-            imageVector = Icons.Default.PlayArrow,
+            modifier = Modifier.size(50.dp).clickable(interactionSource = remember { MutableInteractionSource() }, indication = null) {
+                if (playerState == AudioPlayerState.PLAYING) {
+                    onEvent(HomeEvents.PauseSong)
+                } else {
+                    onEvent(HomeEvents.ResumeSong)
+                }
+            },
+            imageVector = if (playerState == AudioPlayerState.PLAYING) Icons.Default.Pause else Icons.Default.PlayArrow,
             contentDescription = null,
             tint = Color.White
         )

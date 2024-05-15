@@ -5,18 +5,16 @@ import android.content.Context
 import android.net.Uri
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
-import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
 import androidx.media3.session.MediaController
 import androidx.media3.session.SessionToken
 import com.google.common.util.concurrent.ListenableFuture
 import com.google.common.util.concurrent.MoreExecutors
 import data.model.Song
-import data.model.SongMetadata
 
 class AndroidAudioPlayerController(context: Context) : AudioPlayerController {
-    private var controllerFeature: ListenableFuture<MediaController>
-    private val mediaPlayer: MediaController? get() = if (controllerFeature.isDone) controllerFeature.get() else null
+    private var controllerFuture: ListenableFuture<MediaController>
+    private val mediaPlayer: MediaController? get() = if (controllerFuture.isDone && !controllerFuture.isCancelled) controllerFuture.get() else null
 
     override var audioControllerCallback: (
         (
@@ -32,8 +30,8 @@ class AndroidAudioPlayerController(context: Context) : AudioPlayerController {
     init {
         val sessionToken =
             SessionToken(context.applicationContext, ComponentName(context.applicationContext, MediaService::class.java))
-        controllerFeature = MediaController.Builder(context.applicationContext, sessionToken).buildAsync()
-        controllerFeature.addListener({ setController() }, MoreExecutors.directExecutor())
+        controllerFuture = MediaController.Builder(context.applicationContext, sessionToken).buildAsync()
+        controllerFuture.addListener({ setController() }, MoreExecutors.directExecutor())
     }
 
     private fun setController() {
@@ -70,8 +68,6 @@ class AndroidAudioPlayerController(context: Context) : AudioPlayerController {
         }
 
         mediaPlayer?.setMediaItems(mediaItems)
-        mediaPlayer?.prepare()
-        mediaPlayer?.playWhenReady = true
     }
 
     private fun Int.toPlayerState(isPlaying: Boolean): AudioPlayerState {
@@ -131,7 +127,7 @@ class AndroidAudioPlayerController(context: Context) : AudioPlayerController {
     }
 
     override fun release() {
-        MediaController.releaseFuture(controllerFeature)
+        MediaController.releaseFuture(controllerFuture)
         audioControllerCallback = null
     }
 }

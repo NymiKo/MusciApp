@@ -4,10 +4,10 @@ import org.koin.core.module.Module
 import org.koin.dsl.module
 import ui.SharedViewModel
 import ui.home.HomeViewModel
-import ui.player.MediaViewModel
+import ui.player.PlayerViewModel
 
 val viewModelModule: Module = module {
-    factory { MediaViewModel(get(), get()) }
+    factory { PlayerViewModel(get(), get()) }
     factory { SharedViewModel(get()) }
-    factory { HomeViewModel(get()) }
+    factory { HomeViewModel(get(), get()) }
 }

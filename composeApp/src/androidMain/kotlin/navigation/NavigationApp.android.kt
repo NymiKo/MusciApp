@@ -8,8 +8,9 @@ import org.easyprog.musicapp.ui.screens.home.HomeScreen
 import org.easyprog.musicapp.ui.screens.player.PlayerScreen
 import org.koin.androidx.compose.koinViewModel
 import ui.SharedViewModel
+import ui.home.HomeEvents
 import ui.home.HomeViewModel
-import ui.player.MediaViewModel
+import ui.player.PlayerViewModel
 
 @Composable
 actual fun AppNavHost(navController: NavHostController, sharedViewModel: SharedViewModel) {
@@ -18,16 +19,17 @@ actual fun AppNavHost(navController: NavHostController, sharedViewModel: SharedV
     NavHost(navController = navController, startDestination = Destinations.home) {
         composable(route = Destinations.home) {
             val homeViewModel: HomeViewModel = koinViewModel()
+            homeViewModel.onEvent(HomeEvents.FetchData)
 
-            HomeScreen(audioPlayerUiState = audioPlayerUiState, viewModel = homeViewModel)
+            HomeScreen(audioPlayerUiState = audioPlayerUiState, uiState = homeViewModel.homeScreenUiState, onEvent = homeViewModel::onEvent)
         }
 
         composable(route = Destinations.playerSongListScreen) {
-            val mediaViewModel: MediaViewModel = koinViewModel()
+            val playerViewModel: PlayerViewModel = koinViewModel()
 
             PlayerScreen(
                 audioPlayerUiState = audioPlayerUiState,
-                viewModel = mediaViewModel
+                viewModel = playerViewModel
             )
         }
     }

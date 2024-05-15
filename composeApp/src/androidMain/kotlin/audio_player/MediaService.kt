@@ -40,12 +40,13 @@ class MediaService : MediaSessionService() {
                 .also { builder -> getSingleTopActivity()?.let { builder.setSessionActivity(it) } }.build()
     }
 
-//    override fun onTaskRemoved(rootIntent: Intent?) {
-//        val player = mediaSession?.player
-//        if (!player.playWhenReady || player.mediaItemCount == 0) {
-//            stopSelf()
-//        }
-//    }
+    override fun onTaskRemoved(rootIntent: Intent?) {
+        val player = mediaSession?.player!!
+        if (player.playWhenReady) {
+            player.pause()
+        }
+        stopSelf()
+    }
 
     private fun getSingleTopActivity(): PendingIntent? {
         return PendingIntent.getActivity(
