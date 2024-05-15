@@ -1,6 +1,5 @@
 package org.easyprog.musicapp.ui.screens.home
 
-import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.fadeOut
@@ -18,6 +17,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
@@ -38,6 +38,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -46,6 +47,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.util.lerp
 import coil3.compose.AsyncImage
 import custom_elements.text.DefaultText
+import data.model.Artist
 import data.model.Song
 import ui.home.HomeViewModel
 import kotlin.math.absoluteValue
@@ -56,28 +58,32 @@ fun HomeScreen(
     viewModel: HomeViewModel
 ) {
     val homeUiState = viewModel.homeScreenUiState
-    Log.e("PAGE_SIZE", homeUiState.toString())
+
     Box(
         modifier = modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)
             .statusBarsPadding()
     ) {
         Column(
-            modifier = Modifier.padding(top = 48.dp).fillMaxSize().verticalScroll(rememberScrollState())
+            modifier = Modifier.padding(top = 48.dp).fillMaxSize()
+                .verticalScroll(rememberScrollState()),
+            verticalArrangement = Arrangement.spacedBy(48.dp)
         ) {
-            LastSongsColumn(lastSongsList = homeUiState.lastSongsList)
-
-            NameCategory(text = "Новые 10 песен")
+            LastSongsComponent(lastSongsList = homeUiState.lastSongsList)
+            ArtistsComponent(artistsList = homeUiState.artistsList)
         }
     }
 }
 
 @Composable
-private fun LastSongsColumn(
+private fun LastSongsComponent(
     modifier: Modifier = Modifier,
     lastSongsList: List<Song>
 ) {
-    Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(32.dp)) {
-        NameCategory(text = "Новые 10 песен")
+    Column(
+        modifier = modifier,
+        verticalArrangement = Arrangement.spacedBy(32.dp)
+    ) {
+        NameCategory(modifier = Modifier, text = "Новые 10 песен")
         HorizontalPagerLastSongs(songList = lastSongsList)
     }
 }
@@ -87,7 +93,7 @@ private fun NameCategory(modifier: Modifier = Modifier, text: String) {
     DefaultText(
         modifier = modifier.padding(horizontal = 16.dp).fillMaxWidth(),
         text = text,
-        fontSize = 22.sp,
+        fontSize = 26.sp,
         color = MaterialTheme.colorScheme.secondary,
         textAlign = TextAlign.Start
     )
@@ -107,7 +113,7 @@ private fun HorizontalPagerLastSongs(modifier: Modifier = Modifier, songList: Li
         modifier = modifier.fillMaxWidth(),
         state = horizontalState,
         contentPadding = PaddingValues(horizontal = pageSize / 2),
-        beyondBoundsPageCount = 2
+        beyondBoundsPageCount = 5
     ) {
         LastSongItem(
             modifier = Modifier.size(pageSize),
@@ -118,7 +124,7 @@ private fun HorizontalPagerLastSongs(modifier: Modifier = Modifier, songList: Li
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class, ExperimentalAnimationApi::class)
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun LastSongItem(
     modifier: Modifier = Modifier,
@@ -171,7 +177,7 @@ private fun LastSongItem(
             enter = slideInHorizontally(),
             exit = fadeOut()
         ) {
-            NameSong(modifier = Modifier,title = song.title)
+            NameSong(modifier = Modifier, title = song.title)
         }
     }
 }
@@ -198,3 +204,53 @@ private fun NameSong(modifier: Modifier = Modifier, title: String) {
         )
     }
 }
+
+@Composable
+private fun ArtistsComponent(modifier: Modifier = Modifier, artistsList: List<Artist>) {
+    Column(
+        modifier = modifier,
+        verticalArrangement = Arrangement.spacedBy(24.dp)
+    ) {
+        NameCategory(text = "Исполнители")
+        ArtistsRow(artistsList = artistsList)
+    }
+}
+
+@Composable
+private fun ArtistsRow(modifier: Modifier = Modifier, artistsList: List<Artist>) {
+    LazyRow(
+        modifier = modifier,
+        horizontalArrangement = Arrangement.spacedBy(16.dp),
+        contentPadding = PaddingValues(horizontal = 16.dp)
+    ) {
+        items(count = artistsList.size, key = { artistsList[it].id }) {
+            ArtistItem(
+                artistName = artistsList[it].name,
+                artistImage = artistsList[it].urlImage
+            )
+        }
+    }
+}
+
+@Composable
+fun ArtistItem(modifier: Modifier = Modifier, artistImage: String, artistName: String) {
+    Column(
+        modifier = modifier,
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        AsyncImage(
+            modifier = Modifier.size(120.dp).clip(RoundedCornerShape(16.dp)).clickable {  },
+            model = artistImage,
+            contentDescription = null,
+            contentScale = ContentScale.Crop
+        )
+
+        DefaultText(
+            modifier = Modifier,
+            text = artistName
+        )
+    }
+}
+
+

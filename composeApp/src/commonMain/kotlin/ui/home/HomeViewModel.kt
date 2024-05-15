@@ -17,12 +17,20 @@ class HomeViewModel(
 
     init {
         getLastSongList()
+        getArtists()
     }
 
     private fun getLastSongList() {
         viewModelScope.launch {
-            val result = repository.getLastSongList()
+            val result = repository.getLastSongsList()
             homeScreenUiState = homeScreenUiState.copy(lastSongsList = result)
+        }
+    }
+
+    private fun getArtists() {
+        viewModelScope.launch {
+            val result = repository.getArtistsList()
+            homeScreenUiState = homeScreenUiState.copy(artistsList = result)
         }
     }
 }
