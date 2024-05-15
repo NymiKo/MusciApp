@@ -1,7 +1,6 @@
 package org.easyprog.musicapp.ui.screens.home
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -12,8 +11,11 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
@@ -22,12 +24,15 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.PlayCircleOutline
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -36,25 +41,32 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.TextUnit
+import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.util.lerp
+import audio_player.AudioPlayerUiState
 import coil3.compose.AsyncImage
 import custom_elements.text.DefaultText
 import data.model.Artist
 import data.model.Song
+import org.easyprog.musicapp.ui.theme.PurpleDark
+import org.easyprog.musicapp.ui.theme.PurpleLight
 import ui.home.HomeViewModel
 import kotlin.math.absoluteValue
 
 @Composable
 fun HomeScreen(
     modifier: Modifier = Modifier,
+    audioPlayerUiState: AudioPlayerUiState,
     viewModel: HomeViewModel
 ) {
     val homeUiState = viewModel.homeScreenUiState
@@ -65,12 +77,39 @@ fun HomeScreen(
     ) {
         Column(
             modifier = Modifier.padding(top = 48.dp).fillMaxSize()
-                .verticalScroll(rememberScrollState()),
-            verticalArrangement = Arrangement.spacedBy(48.dp)
+                .verticalScroll(rememberScrollState())
         ) {
+            Box(
+                modifier = Modifier.padding(16.dp).fillMaxWidth().height(200.dp)
+                    .clip(RoundedCornerShape(24.dp))
+                    .background(Brush.verticalGradient(listOf(PurpleLight, PurpleDark))),
+                contentAlignment = Alignment.Center
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        modifier = Modifier.size(50.dp),
+                        imageVector = Icons.Default.PlayArrow,
+                        contentDescription = null,
+                        tint = Color.White
+                    )
+                    Text(
+                        modifier = Modifier,
+                        text = "Моя волна",
+                        fontSize = 28.sp,
+                        color = Color.White,
+                        fontWeight = FontWeight.ExtraBold
+                    )
+                }
+            }
             LastSongsComponent(lastSongsList = homeUiState.lastSongsList)
             ArtistsComponent(artistsList = homeUiState.artistsList)
         }
+        BottomPlayerComponent(
+            modifier = Modifier.padding(8.dp).navigationBarsPadding().align(Alignment.BottomCenter),
+            songImage = ""
+        )
     }
 }
 
@@ -83,7 +122,7 @@ private fun LastSongsComponent(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(32.dp)
     ) {
-        NameCategory(modifier = Modifier, text = "Новые 10 песен")
+        NameCategory(text = "Новые 10 песен")
         HorizontalPagerLastSongs(songList = lastSongsList)
     }
 }
@@ -170,7 +209,8 @@ private fun LastSongItem(
         AsyncImage(
             modifier = Modifier.fillMaxSize(),
             model = song.urlImage,
-            contentDescription = null
+            contentDescription = null,
+            contentScale = ContentScale.Crop
         )
         AnimatedVisibility(
             visible = visibleNameSong,
@@ -208,7 +248,7 @@ private fun NameSong(modifier: Modifier = Modifier, title: String) {
 @Composable
 private fun ArtistsComponent(modifier: Modifier = Modifier, artistsList: List<Artist>) {
     Column(
-        modifier = modifier,
+        modifier = modifier.padding(top = 48.dp),
         verticalArrangement = Arrangement.spacedBy(24.dp)
     ) {
         NameCategory(text = "Исполнители")
@@ -240,7 +280,7 @@ fun ArtistItem(modifier: Modifier = Modifier, artistImage: String, artistName: S
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         AsyncImage(
-            modifier = Modifier.size(120.dp).clip(RoundedCornerShape(16.dp)).clickable {  },
+            modifier = Modifier.size(120.dp).clip(RoundedCornerShape(16.dp)).clickable { },
             model = artistImage,
             contentDescription = null,
             contentScale = ContentScale.Crop
@@ -248,7 +288,33 @@ fun ArtistItem(modifier: Modifier = Modifier, artistImage: String, artistName: S
 
         DefaultText(
             modifier = Modifier,
-            text = artistName
+            text = artistName,
+            letterSpacing = TextUnit(-0.5F, TextUnitType.Sp),
+        )
+    }
+}
+
+@Composable
+fun BottomPlayerComponent(modifier: Modifier = Modifier, songImage: String) {
+    Row(
+        modifier = modifier.fillMaxWidth().height(70.dp).clip(CircleShape).background(PurpleDark)
+            .padding(start = 4.dp, end = 16.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        AsyncImage(
+            modifier = Modifier.size(60.dp).clip(CircleShape),
+            model = songImage,
+            contentDescription = null
+        )
+        Spacer(modifier = Modifier.weight(1F))
+        Icon(
+            modifier = Modifier.size(50.dp)
+                .clickable {
+
+                },
+            imageVector = Icons.Default.PlayArrow,
+            contentDescription = null,
+            tint = Color.White
         )
     }
 }
