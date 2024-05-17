@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import audio_player.AudioPlayerController
 import audio_player.AudioPlayerState
 import audio_player.AudioPlayerUiState
+import data.model.SongMetadata
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -22,9 +23,10 @@ class SharedViewModel(
     }
 
     private fun setupMediaControllerCallback() {
-        audioControllerCallback { playerState, currentPosition, currentTime, totalTime, isShuffle, isRepeat ->
+        audioControllerCallback { playerState, currentSong, currentPosition, currentTime, totalTime, isShuffle, isRepeat ->
             audioPlayerUiState = audioPlayerUiState.copy(
                 playerState = playerState,
+                currentSong = currentSong,
                 currentPosition = currentPosition,
                 currentTime = currentTime,
                 totalTime = totalTime,
@@ -47,6 +49,7 @@ class SharedViewModel(
     private fun audioControllerCallback(
         callback: (
             playerState: AudioPlayerState,
+            currentSong: SongMetadata,
             currentPosition: Int,
             currentTime: Long,
             totalTime: Long,

@@ -1,6 +1,11 @@
 package navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -19,7 +24,13 @@ actual fun AppNavHost(navController: NavHostController, sharedViewModel: SharedV
     NavHost(navController = navController, startDestination = Destinations.home) {
         composable(route = Destinations.home) {
             val homeViewModel: HomeViewModel = koinViewModel()
-            homeViewModel.onEvent(HomeEvents.FetchData)
+            var isInitialized by rememberSaveable { mutableStateOf(false) }
+
+            if (!isInitialized)
+            LaunchedEffect(Unit) {
+                homeViewModel.onEvent(HomeEvents.FetchData)
+                isInitialized = true
+            }
 
             HomeScreen(
                 audioPlayerUiState = audioPlayerUiState,

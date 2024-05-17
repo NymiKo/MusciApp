@@ -3,7 +3,7 @@ package ui.home
 import data.model.Song
 
 sealed class HomeEvents {
-    object PlaySong : HomeEvents()
+    data class PlaySong(val indexSong: Int) : HomeEvents()
     object PauseSong : HomeEvents()
     object ResumeSong : HomeEvents()
     object FetchData : HomeEvents()

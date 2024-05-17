@@ -1,17 +1,19 @@
 package audio_player
 
 import data.model.Song
+import data.model.SongMetadata
 import kotlinx.coroutines.flow.Flow
 
 interface AudioPlayerController {
     var audioControllerCallback: (
         (
-            playerState: AudioPlayerState,
-            currentPosition: Int,
-            currentTime: Long,
-            totalTime: Long,
-            isShuffle: Boolean,
-            isRepeat: Boolean
+        playerState: AudioPlayerState,
+        currentSong: SongMetadata,
+        currentPosition: Int,
+        currentTime: Long,
+        totalTime: Long,
+        isShuffle: Boolean,
+        isRepeat: Boolean
         ) -> Unit
     )?
     fun addMediaItems(songs: List<Song>)

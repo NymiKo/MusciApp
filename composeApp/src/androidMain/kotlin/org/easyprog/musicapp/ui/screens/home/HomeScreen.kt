@@ -108,10 +108,10 @@ fun HomeScreen(
             }
             LastSongsComponent(
                 lastSongsList = uiState.lastSongsList,
-                playSong = { song ->
+                playSong = { song, indexSong ->
                     onEvent(HomeEvents.AddSongsToPlayer)
                     onEvent(HomeEvents.OnSongSelected(song))
-                    onEvent(HomeEvents.PlaySong)
+                    onEvent(HomeEvents.PlaySong(indexSong))
                 }
             )
             ArtistsComponent(artistsList = uiState.artistsList)
@@ -123,9 +123,9 @@ fun HomeScreen(
             modifier = Modifier.navigationBarsPadding().align(Alignment.BottomCenter),
             visible = audioPlayerUiState.playerState != AudioPlayerState.STOPPED
         ) {
-            if (uiState.selectedSong != null) {
+            if (audioPlayerUiState.currentSong != null) {
                 BottomPlayerComponent(
-                    songImage = uiState.selectedSong.urlImage,
+                    songImage = audioPlayerUiState.currentSong.artwork,
                     playerState = audioPlayerUiState.playerState,
                     onEvent = onEvent::invoke,
                     onPlayerScreen = onPlayerScreen::invoke
@@ -139,7 +139,7 @@ fun HomeScreen(
 private fun LastSongsComponent(
     modifier: Modifier = Modifier,
     lastSongsList: List<Song>,
-    playSong: (song: Song) -> Unit
+    playSong: (song: Song, index: Int) -> Unit
 ) {
     Column(
         modifier = modifier,
@@ -166,7 +166,7 @@ private fun NameCategory(modifier: Modifier = Modifier, text: String) {
 private fun HorizontalPagerLastSongs(
     modifier: Modifier = Modifier,
     songList: List<Song>,
-    playSong: (song: Song) -> Unit
+    playSong: (song: Song, index: Int) -> Unit
 ) {
     val horizontalState = rememberPagerState(
         initialPage = 0,
@@ -181,12 +181,12 @@ private fun HorizontalPagerLastSongs(
         contentPadding = PaddingValues(horizontal = pageSize / 2),
         beyondBoundsPageCount = 1,
         key = { songList[it].id }
-    ) {
+    ) { indexSong ->
         LastSongItem(
-            modifier = Modifier.size(pageSize).clickable { playSong(songList[it]) },
-            song = songList[it],
+            modifier = Modifier.size(pageSize).clickable { playSong(songList[indexSong], indexSong) },
+            song = songList[indexSong],
             pagerState = horizontalState,
-            indexPage = it
+            indexPage = indexSong
         )
     }
 }

@@ -11,6 +11,7 @@ import androidx.media3.session.SessionToken
 import com.google.common.util.concurrent.ListenableFuture
 import com.google.common.util.concurrent.MoreExecutors
 import data.model.Song
+import data.model.SongMetadata
 
 class AndroidAudioPlayerController(context: Context) : AudioPlayerController {
     private var controllerFuture: ListenableFuture<MediaController>
@@ -18,19 +19,24 @@ class AndroidAudioPlayerController(context: Context) : AudioPlayerController {
 
     override var audioControllerCallback: (
         (
-            playerState: AudioPlayerState,
-            currentPosition: Int,
-            currentTime: Long,
-            totalTime: Long,
-            isShuffle: Boolean,
-            isRepeat: Boolean
-        ) -> Unit
+        playerState: AudioPlayerState,
+        currentSong: SongMetadata,
+        currentPosition: Int,
+        currentTime: Long,
+        totalTime: Long,
+        isShuffle: Boolean,
+        isRepeat: Boolean
+    ) -> Unit
     )? = null
 
     init {
         val sessionToken =
-            SessionToken(context.applicationContext, ComponentName(context.applicationContext, MediaService::class.java))
-        controllerFuture = MediaController.Builder(context.applicationContext, sessionToken).buildAsync()
+            SessionToken(
+                context.applicationContext,
+                ComponentName(context.applicationContext, MediaService::class.java)
+            )
+        controllerFuture =
+            MediaController.Builder(context.applicationContext, sessionToken).buildAsync()
         controllerFuture.addListener({ setController() }, MoreExecutors.directExecutor())
     }
 
@@ -42,6 +48,11 @@ class AndroidAudioPlayerController(context: Context) : AudioPlayerController {
                 with(player) {
                     audioControllerCallback?.invoke(
                         playbackState.toPlayerState(isPlaying),
+                        SongMetadata(
+                            title = currentMediaItem?.mediaMetadata?.title.toString(),
+                            artist = currentMediaItem?.mediaMetadata?.artist.toString(),
+                            artwork = currentMediaItem?.mediaMetadata?.artworkUri.toString()
+                        ),
                         currentMediaItemIndex,
                         currentPosition.coerceAtLeast(0L),
                         duration.coerceAtLeast(0L),
@@ -71,7 +82,7 @@ class AndroidAudioPlayerController(context: Context) : AudioPlayerController {
     }
 
     private fun Int.toPlayerState(isPlaying: Boolean): AudioPlayerState {
-        return when(this) {
+        return when (this) {
             Player.STATE_IDLE -> AudioPlayerState.STOPPED
             Player.STATE_ENDED -> AudioPlayerState.STOPPED
             else -> if (isPlaying) AudioPlayerState.PLAYING else AudioPlayerState.PAUSED

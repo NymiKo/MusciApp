@@ -28,7 +28,7 @@ class HomeViewModel(
             }
             is HomeEvents.OnSongSelected -> homeScreenUiState = homeScreenUiState.copy(selectedSong = events.selectedSong)
             HomeEvents.PauseSong -> pauseSong()
-            HomeEvents.PlaySong -> playSong()
+            is HomeEvents.PlaySong -> playSong(indexSong = events.indexSong)
             HomeEvents.ResumeSong -> resumeSong()
             HomeEvents.AddSongsToPlayer -> addSongsToPlayer(songsList = homeScreenUiState.lastSongsList)
         }
@@ -50,8 +50,8 @@ class HomeViewModel(
         }
     }
 
-    private fun playSong() {
-        audioPlayerController.play(homeScreenUiState.lastSongsList.indexOf(homeScreenUiState.selectedSong))
+    private fun playSong(indexSong: Int) {
+        audioPlayerController.play(indexSong)
     }
 
     private fun resumeSong() {

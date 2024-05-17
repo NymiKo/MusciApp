@@ -22,11 +22,8 @@ class PlayerViewModel(
     }
 
     private fun loadSongsList() {
-        playerUiState = playerUiState.copy(loading = true)
         viewModelScope.launch {
-            val result = repository.getSongsList()
-            //audioPlayerController.addMediaItems(result)
-            playerUiState = playerUiState.copy(loading = false, songList = result)
+            playerUiState = playerUiState.copy(loading = false)
         }
     }
 
