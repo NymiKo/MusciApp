@@ -80,7 +80,8 @@ import kotlin.math.absoluteValue
 fun PlayerScreen(
     modifier: Modifier = Modifier,
     audioPlayerUiState: AudioPlayerUiState,
-    viewModel: PlayerViewModel
+    viewModel: PlayerViewModel,
+    onBack: () -> Unit
 ) {
     val playerScreenUiState = viewModel.playerUiState
 
@@ -90,6 +91,7 @@ fun PlayerScreen(
         Scaffold(
             topBar = {
                 TopAppBar(
+                    modifier = Modifier.clickable { onBack() },
                     title = {},
                     navigationIcon = {
                         Icon(

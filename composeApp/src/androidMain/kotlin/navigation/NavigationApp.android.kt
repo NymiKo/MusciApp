@@ -21,7 +21,12 @@ actual fun AppNavHost(navController: NavHostController, sharedViewModel: SharedV
             val homeViewModel: HomeViewModel = koinViewModel()
             homeViewModel.onEvent(HomeEvents.FetchData)
 
-            HomeScreen(audioPlayerUiState = audioPlayerUiState, uiState = homeViewModel.homeScreenUiState, onEvent = homeViewModel::onEvent)
+            HomeScreen(
+                audioPlayerUiState = audioPlayerUiState,
+                uiState = homeViewModel.homeScreenUiState,
+                onEvent = homeViewModel::onEvent,
+                onPlayerScreen = { navController.navigate(Destinations.playerSongListScreen) },
+            )
         }
 
         composable(route = Destinations.playerSongListScreen) {
@@ -29,7 +34,8 @@ actual fun AppNavHost(navController: NavHostController, sharedViewModel: SharedV
 
             PlayerScreen(
                 audioPlayerUiState = audioPlayerUiState,
-                viewModel = playerViewModel
+                viewModel = playerViewModel,
+                onBack = navController::navigateUp
             )
         }
     }

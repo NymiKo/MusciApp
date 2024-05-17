@@ -54,7 +54,6 @@ import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.util.lerp
-import androidx.media3.common.Player
 import audio_player.AudioPlayerState
 import audio_player.AudioPlayerUiState
 import coil3.compose.AsyncImage
@@ -72,7 +71,8 @@ fun HomeScreen(
     modifier: Modifier = Modifier,
     audioPlayerUiState: AudioPlayerUiState,
     uiState: HomeScreenUiState,
-    onEvent: (HomeEvents) -> Unit
+    onEvent: (HomeEvents) -> Unit,
+    onPlayerScreen: () -> Unit
 ) {
     Box(
         modifier = modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)
@@ -127,7 +127,8 @@ fun HomeScreen(
                 BottomPlayerComponent(
                     songImage = uiState.selectedSong.urlImage,
                     playerState = audioPlayerUiState.playerState,
-                    onEvent = onEvent::invoke
+                    onEvent = onEvent::invoke,
+                    onPlayerScreen = onPlayerScreen::invoke
                 )
             }
         }
@@ -178,7 +179,8 @@ private fun HorizontalPagerLastSongs(
         modifier = modifier.fillMaxWidth(),
         state = horizontalState,
         contentPadding = PaddingValues(horizontal = pageSize / 2),
-        beyondBoundsPageCount = 5
+        beyondBoundsPageCount = 1,
+        key = { songList[it].id }
     ) {
         LastSongItem(
             modifier = Modifier.size(pageSize).clickable { playSong(songList[it]) },
@@ -320,11 +322,17 @@ fun ArtistItem(modifier: Modifier = Modifier, artistImage: String, artistName: S
 }
 
 @Composable
-fun BottomPlayerComponent(modifier: Modifier = Modifier, songImage: String, playerState: AudioPlayerState, onEvent: (HomeEvents) -> Unit) {
+fun BottomPlayerComponent(
+    modifier: Modifier = Modifier,
+    songImage: String,
+    playerState: AudioPlayerState,
+    onEvent: (HomeEvents) -> Unit,
+    onPlayerScreen: () -> Unit
+) {
     Row(
         modifier = modifier.fillMaxWidth().height(70.dp)
             .clip(RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp)).background(PurpleDark)
-            .padding(start = 8.dp, end = 16.dp),
+            .clickable { onPlayerScreen() }.padding(start = 8.dp, end = 16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         AsyncImage(
@@ -334,7 +342,10 @@ fun BottomPlayerComponent(modifier: Modifier = Modifier, songImage: String, play
         )
         Spacer(modifier = Modifier.weight(1F))
         Icon(
-            modifier = Modifier.size(50.dp).clickable(interactionSource = remember { MutableInteractionSource() }, indication = null) {
+            modifier = Modifier.size(50.dp).clickable(
+                interactionSource = remember { MutableInteractionSource() },
+                indication = null
+            ) {
                 if (playerState == AudioPlayerState.PLAYING) {
                     onEvent(HomeEvents.PauseSong)
                 } else {
