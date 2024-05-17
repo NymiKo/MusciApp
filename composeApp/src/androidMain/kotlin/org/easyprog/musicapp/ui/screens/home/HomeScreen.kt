@@ -72,7 +72,8 @@ fun HomeScreen(
     audioPlayerUiState: AudioPlayerUiState,
     uiState: HomeScreenUiState,
     onEvent: (HomeEvents) -> Unit,
-    onPlayerScreen: () -> Unit
+    onPlayerScreen: () -> Unit,
+    setSongsList: (songsList: List<Song>) -> Unit
 ) {
     Box(
         modifier = modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)
@@ -109,9 +110,9 @@ fun HomeScreen(
             LastSongsComponent(
                 lastSongsList = uiState.lastSongsList,
                 playSong = { song, indexSong ->
-                    onEvent(HomeEvents.AddSongsToPlayer)
                     onEvent(HomeEvents.OnSongSelected(song))
                     onEvent(HomeEvents.PlaySong(indexSong))
+                    setSongsList(uiState.lastSongsList)
                 }
             )
             ArtistsComponent(artistsList = uiState.artistsList)

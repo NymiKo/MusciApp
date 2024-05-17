@@ -108,7 +108,7 @@ fun PlayerScreen(
         ) { paddingValues ->
             PlayerScreen(
                 modifier = modifier.padding(paddingValues),
-                songsList = playerScreenUiState.songList,
+                songsList = audioPlayerUiState.currentSongsList,
                 currentPlayingSongIndex = audioPlayerUiState.currentPosition,
                 currentTime = audioPlayerUiState.currentTime.toFloat(),
                 fullTime = audioPlayerUiState.totalTime,

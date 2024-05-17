@@ -37,6 +37,7 @@ actual fun AppNavHost(navController: NavHostController, sharedViewModel: SharedV
                 uiState = homeViewModel.homeScreenUiState,
                 onEvent = homeViewModel::onEvent,
                 onPlayerScreen = { navController.navigate(Destinations.playerSongListScreen) },
+                setSongsList = { sharedViewModel.setSongsList(it) }
             )
         }
 

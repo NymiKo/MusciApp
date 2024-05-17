@@ -36,6 +36,7 @@ class HomeViewModel(
 
     private fun getLastSongList() = viewModelScope.launch {
         val result = repository.getLastSongsList()
+        addSongsToPlayer(result)
         homeScreenUiState = homeScreenUiState.copy(lastSongsList = result)
     }
 

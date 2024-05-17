@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import audio_player.AudioPlayerController
 import audio_player.AudioPlayerState
 import audio_player.AudioPlayerUiState
+import data.model.Song
 import data.model.SongMetadata
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -62,5 +63,9 @@ class SharedViewModel(
 
     fun releaseMediaPlayer() {
         audioPlayerController.release()
+    }
+
+    fun setSongsList(songsList: List<Song>) {
+        audioPlayerUiState = audioPlayerUiState.copy(currentSongsList = songsList)
     }
 }
