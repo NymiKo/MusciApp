@@ -60,6 +60,7 @@ import coil3.compose.AsyncImage
 import custom_elements.text.DefaultText
 import data.model.Artist
 import data.model.Song
+import data.model.SongMetadata
 import org.easyprog.musicapp.ui.theme.PurpleDark
 import org.easyprog.musicapp.ui.theme.PurpleLight
 import ui.home.HomeEvents
@@ -126,7 +127,7 @@ fun HomeScreen(
         ) {
             if (audioPlayerUiState.currentSong != null) {
                 BottomPlayerComponent(
-                    songImage = audioPlayerUiState.currentSong.artwork,
+                    song = audioPlayerUiState.currentSong,
                     playerState = audioPlayerUiState.playerState,
                     onEvent = onEvent::invoke,
                     onPlayerScreen = onPlayerScreen::invoke
@@ -325,7 +326,7 @@ fun ArtistItem(modifier: Modifier = Modifier, artistImage: String, artistName: S
 @Composable
 fun BottomPlayerComponent(
     modifier: Modifier = Modifier,
-    songImage: String,
+    song: SongMetadata,
     playerState: AudioPlayerState,
     onEvent: (HomeEvents) -> Unit,
     onPlayerScreen: () -> Unit
@@ -338,10 +339,27 @@ fun BottomPlayerComponent(
     ) {
         AsyncImage(
             modifier = Modifier.size(55.dp).clip(RoundedCornerShape(16.dp)),
-            model = songImage,
+            model = song.artwork,
             contentDescription = null
         )
-        Spacer(modifier = Modifier.weight(1F))
+        Column(
+            modifier = Modifier.padding(start = 16.dp).weight(1F),
+            verticalArrangement = Arrangement.Center
+        ) {
+            DefaultText(
+                text = song.title,
+                color = MaterialTheme.colorScheme.secondary,
+                letterSpacing = TextUnit(-0.5F, TextUnitType.Sp),
+                fontSize = 18.sp
+            )
+
+            DefaultText(
+                text = song.artist,
+                color = Color.Gray,
+                letterSpacing = TextUnit(-0.5F, TextUnitType.Sp),
+                fontSize = 16.sp
+            )
+        }
         Icon(
             modifier = Modifier.size(50.dp).clickable(
                 interactionSource = remember { MutableInteractionSource() },
