@@ -8,6 +8,6 @@ import ui.player.PlayerViewModel
 
 val viewModelModule: Module = module {
     factory { PlayerViewModel(get(), get()) }
-    factory { SharedViewModel(get()) }
+    factory { SharedViewModel(get(), get()) }
     factory { HomeViewModel(get(), get()) }
 }

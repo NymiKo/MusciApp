@@ -8,12 +8,14 @@ import androidx.lifecycle.viewModelScope
 import audio_player.AudioPlayerController
 import audio_player.AudioPlayerState
 import audio_player.AudioPlayerUiState
+import data.home.HomeRepository
 import data.model.Song
 import data.model.SongMetadata
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class SharedViewModel(
+    private val repository: HomeRepository,
     private val audioPlayerController: AudioPlayerController
 ): ViewModel() {
     var audioPlayerUiState by mutableStateOf(AudioPlayerUiState())
@@ -67,5 +69,16 @@ class SharedViewModel(
 
     fun setSongsList(songsList: List<Song>) {
         audioPlayerUiState = audioPlayerUiState.copy(currentSongsList = songsList)
+    }
+
+    fun getSongs() = viewModelScope.launch {
+        if (audioPlayerUiState.currentPosition == audioPlayerUiState.currentSongsList.lastIndex || audioPlayerUiState.currentPosition == 0) {
+            val result = repository.getSongsMyWave(audioPlayerUiState.currentPosition.toLong())
+            val songsList = audioPlayerUiState.currentSongsList.toMutableList()
+            songsList.addAll(result)
+            audioPlayerUiState = audioPlayerUiState.copy(currentSongsList = songsList)
+            audioPlayerController.addMediaItems(result)
+            audioPlayerController.play(audioPlayerUiState.currentPosition)
+        }
     }
 }

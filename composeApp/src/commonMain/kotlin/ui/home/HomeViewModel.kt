@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.viewModel
 import audio_player.AudioPlayerController
 import data.home.HomeRepository
 import data.model.Song
@@ -30,7 +31,7 @@ class HomeViewModel(
             HomeEvents.PauseSong -> pauseSong()
             is HomeEvents.PlaySong -> playSong(indexSong = events.indexSong)
             HomeEvents.ResumeSong -> resumeSong()
-            HomeEvents.AddSongsToPlayer -> addSongsToPlayer(songsList = homeScreenUiState.lastSongsList)
+            is HomeEvents.AddSongsToPlayer -> addSongsToPlayer(songsList = events.songsList)
         }
     }
 

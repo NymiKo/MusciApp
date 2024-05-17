@@ -74,7 +74,8 @@ fun HomeScreen(
     uiState: HomeScreenUiState,
     onEvent: (HomeEvents) -> Unit,
     onPlayerScreen: () -> Unit,
-    setSongsList: (songsList: List<Song>) -> Unit
+    setSongsList: (songsList: List<Song>) -> Unit,
+    getSongsListMyWave: () -> Unit
 ) {
     Box(
         modifier = modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)
@@ -91,6 +92,9 @@ fun HomeScreen(
                 contentAlignment = Alignment.Center
             ) {
                 Row(
+                    modifier = Modifier.clickable {
+                        getSongsListMyWave()
+                    },
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Icon(

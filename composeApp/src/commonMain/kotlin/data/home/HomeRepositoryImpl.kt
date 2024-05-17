@@ -12,12 +12,21 @@ class HomeRepositoryImpl(
     private val httpClient: HttpClient
 ): HomeRepository {
     override suspend fun getLastSongsList(): List<Song> = withContext(Dispatchers.IO) {
-        val response = httpClient.get("http://f0862137.xsph.ru/musicApp/getSongs.php").body<List<Song>>()
-        return@withContext response.takeLast(10)
+        val response = httpClient.get("http://f0862137.xsph.ru/musicApp/getNewSongs.php").body<List<Song>>()
+        return@withContext response
     }
 
     override suspend fun getArtistsList(): List<Artist> = withContext(Dispatchers.IO) {
         val response = httpClient.get("http://f0862137.xsph.ru/musicApp/getArtistsForHome.php").body<List<Artist>>()
+        return@withContext response
+    }
+
+    override suspend fun getSongsMyWave(lastId: Long): List<Song>  = withContext(Dispatchers.IO){
+        val response = httpClient.get("http://f0862137.xsph.ru/musicApp/getSongs.php"){
+            url {
+                parameters.append("lastId", lastId.toString())
+            }
+        }.body<List<Song>>()
         return@withContext response
     }
 }

@@ -7,6 +7,6 @@ sealed class HomeEvents {
     object PauseSong : HomeEvents()
     object ResumeSong : HomeEvents()
     object FetchData : HomeEvents()
-    object AddSongsToPlayer : HomeEvents()
+    data class AddSongsToPlayer(val songsList: List<Song>) : HomeEvents()
     data class OnSongSelected(val selectedSong: Song) : HomeEvents()
 }

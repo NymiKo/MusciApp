@@ -37,7 +37,8 @@ actual fun AppNavHost(navController: NavHostController, sharedViewModel: SharedV
                 uiState = homeViewModel.homeScreenUiState,
                 onEvent = homeViewModel::onEvent,
                 onPlayerScreen = { navController.navigate(Destinations.playerSongListScreen) },
-                setSongsList = { sharedViewModel.setSongsList(it) }
+                setSongsList = { sharedViewModel.setSongsList(it) },
+                getSongsListMyWave = sharedViewModel::getSongs
             )
         }
 
@@ -47,6 +48,7 @@ actual fun AppNavHost(navController: NavHostController, sharedViewModel: SharedV
             PlayerScreen(
                 audioPlayerUiState = audioPlayerUiState,
                 viewModel = playerViewModel,
+                getSongsListMyWave = sharedViewModel::getSongs,
                 onBack = navController::navigateUp
             )
         }

@@ -81,64 +81,51 @@ fun PlayerScreen(
     modifier: Modifier = Modifier,
     audioPlayerUiState: AudioPlayerUiState,
     viewModel: PlayerViewModel,
+    getSongsListMyWave: () -> Unit,
     onBack: () -> Unit
 ) {
     val playerScreenUiState = viewModel.playerUiState
 
-    if (playerScreenUiState.loading) {
-        BoxLoading()
-    } else {
-        Scaffold(
-            topBar = {
-                TopAppBar(
-                    modifier = Modifier.clickable { onBack() },
-                    title = {},
-                    navigationIcon = {
-                        Icon(
-                            modifier = Modifier.padding(8.dp).size(35.dp),
-                            imageVector = Icons.Rounded.KeyboardArrowDown,
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.secondary
-                        )
-                    },
-                    colors = TopAppBarDefaults.topAppBarColors()
-                        .copy(containerColor = PurpleLight)
-                )
-            }
-        ) { paddingValues ->
-            PlayerScreen(
-                modifier = modifier.padding(paddingValues),
-                songsList = audioPlayerUiState.currentSongsList,
-                currentPlayingSongIndex = audioPlayerUiState.currentPosition,
-                currentTime = audioPlayerUiState.currentTime.toFloat(),
-                fullTime = audioPlayerUiState.totalTime,
-                isPlaying = audioPlayerUiState.playerState == AudioPlayerState.PLAYING,
-                isRepeatModeEnabled = audioPlayerUiState.isRepeat,
-                isShuffleModeEnabled = audioPlayerUiState.isShuffle,
-                changeTime = viewModel::changeTime,
-                prevSong = viewModel::prevSong,
-                pauseOrPlay = {
-                    if (audioPlayerUiState.playerState == AudioPlayerState.PLAYING) viewModel.pause() else viewModel.resume()
+    if (audioPlayerUiState.currentPosition == audioPlayerUiState.currentSongsList.lastIndex) {
+        getSongsListMyWave()
+    }
+
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                modifier = Modifier.clickable { onBack() },
+                title = {},
+                navigationIcon = {
+                    Icon(
+                        modifier = Modifier.padding(8.dp).size(35.dp),
+                        imageVector = Icons.Rounded.KeyboardArrowDown,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.secondary
+                    )
                 },
-                nextSong = viewModel::nextSong,
-                scrollToSong = viewModel::scrollToSong,
-                changeRepeatMode = viewModel::changeRepeatMode,
-                changeShuffleMode = viewModel::changeShuffleMode
+                colors = TopAppBarDefaults.topAppBarColors()
+                    .copy(containerColor = PurpleLight)
             )
         }
-    }
-}
-
-@Composable
-private fun BoxLoading(modifier: Modifier = Modifier) {
-    Box(
-        modifier = modifier.fillMaxSize().background(MaterialTheme.colorScheme.background),
-        contentAlignment = Alignment.Center
-    ) {
-        Text(
-            text = "Загрузка...",
-            fontSize = 20.sp,
-            color = Color.White
+    ) { paddingValues ->
+        PlayerScreen(
+            modifier = modifier.padding(paddingValues),
+            songsList = audioPlayerUiState.currentSongsList,
+            currentPlayingSongIndex = audioPlayerUiState.currentPosition,
+            currentTime = audioPlayerUiState.currentTime.toFloat(),
+            fullTime = audioPlayerUiState.totalTime,
+            isPlaying = audioPlayerUiState.playerState == AudioPlayerState.PLAYING,
+            isRepeatModeEnabled = audioPlayerUiState.isRepeat,
+            isShuffleModeEnabled = audioPlayerUiState.isShuffle,
+            changeTime = viewModel::changeTime,
+            prevSong = viewModel::prevSong,
+            pauseOrPlay = {
+                if (audioPlayerUiState.playerState == AudioPlayerState.PLAYING) viewModel.pause() else viewModel.resume()
+            },
+            nextSong = viewModel::nextSong,
+            scrollToSong = viewModel::scrollToSong,
+            changeRepeatMode = viewModel::changeRepeatMode,
+            changeShuffleMode = viewModel::changeShuffleMode
         )
     }
 }
