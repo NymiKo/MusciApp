@@ -5,7 +5,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.compose.viewModel
 import audio_player.AudioPlayerController
 import data.home.HomeRepository
 import data.model.Song
@@ -42,7 +41,7 @@ class HomeViewModel(
     }
 
     private fun addSongsToPlayer(songsList: List<Song>) {
-        audioPlayerController.addMediaItems(songs = songsList)
+        audioPlayerController.setMediaItems(songs = songsList)
     }
 
     private fun getArtists() {

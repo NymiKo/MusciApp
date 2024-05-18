@@ -2,7 +2,6 @@ package audio_player
 
 import data.model.Song
 import data.model.SongMetadata
-import kotlinx.coroutines.flow.Flow
 
 interface AudioPlayerController {
     var audioControllerCallback: (
@@ -16,6 +15,7 @@ interface AudioPlayerController {
         isRepeat: Boolean
         ) -> Unit
     )?
+    fun setMediaItems(songs: List<Song>)
     fun addMediaItems(songs: List<Song>)
     fun play(indexSong: Int)
     fun resume()

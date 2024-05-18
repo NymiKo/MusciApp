@@ -64,7 +64,7 @@ class AndroidAudioPlayerController(context: Context) : AudioPlayerController {
         })
     }
 
-    override fun addMediaItems(songs: List<Song>) {
+    private fun mapToMediaItems(songs: List<Song>): List<MediaItem> {
         val mediaItems: List<MediaItem> = songs.map { song ->
             MediaItem.Builder()
                 .setMediaId(song.urlMusic)
@@ -78,7 +78,15 @@ class AndroidAudioPlayerController(context: Context) : AudioPlayerController {
                 ).build()
         }
 
-        mediaPlayer?.setMediaItems(mediaItems)
+        return mediaItems
+    }
+
+    override fun setMediaItems(songs: List<Song>) {
+        mediaPlayer?.setMediaItems(mapToMediaItems(songs))
+    }
+
+    override fun addMediaItems(songs: List<Song>) {
+        mediaPlayer?.addMediaItems(mapToMediaItems(songs))
     }
 
     private fun Int.toPlayerState(isPlaying: Boolean): AudioPlayerState {

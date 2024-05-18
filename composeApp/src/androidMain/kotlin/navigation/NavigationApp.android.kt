@@ -26,10 +26,11 @@ actual fun AppNavHost(navController: NavHostController, sharedViewModel: SharedV
             val homeViewModel: HomeViewModel = koinViewModel()
             var isInitialized by rememberSaveable { mutableStateOf(false) }
 
-            if (!isInitialized)
-            LaunchedEffect(Unit) {
-                homeViewModel.onEvent(HomeEvents.FetchData)
-                isInitialized = true
+            if (!isInitialized) {
+                LaunchedEffect(Unit) {
+                    homeViewModel.onEvent(HomeEvents.FetchData)
+                    isInitialized = true
+                }
             }
 
             HomeScreen(
