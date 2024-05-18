@@ -82,6 +82,7 @@ class AndroidAudioPlayerController(context: Context) : AudioPlayerController {
     }
 
     override fun setMediaItems(songs: List<Song>) {
+        mediaPlayer?.clearMediaItems()
         mediaPlayer?.setMediaItems(mapToMediaItems(songs))
     }
 

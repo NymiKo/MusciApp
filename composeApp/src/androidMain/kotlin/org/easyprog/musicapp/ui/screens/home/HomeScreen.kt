@@ -116,9 +116,8 @@ fun HomeScreen(
             LastSongsComponent(
                 lastSongsList = uiState.lastSongsList,
                 playSong = { song, indexSong ->
-                    onEvent(HomeEvents.OnSongSelected(song))
-                    onEvent(HomeEvents.PlaySong(indexSong))
                     setSongsList(uiState.lastSongsList)
+                    onEvent(HomeEvents.PlaySong(indexSong))
                 }
             )
             ArtistsComponent(artistsList = uiState.artistsList)

@@ -86,7 +86,7 @@ fun PlayerScreen(
 ) {
     val playerScreenUiState = viewModel.playerUiState
 
-    if (audioPlayerUiState.currentPosition == audioPlayerUiState.currentSongsList.lastIndex) {
+    if (audioPlayerUiState.currentPosition == audioPlayerUiState.currentSongsList.lastIndex && !audioPlayerUiState.endGetSongs) {
         getSongsListMyWave()
     }
 

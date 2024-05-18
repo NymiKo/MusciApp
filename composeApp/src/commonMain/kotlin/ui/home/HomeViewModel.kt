@@ -26,7 +26,6 @@ class HomeViewModel(
                 getArtists()
                 homeScreenUiState = homeScreenUiState.copy(loading = false)
             }
-            is HomeEvents.OnSongSelected -> homeScreenUiState = homeScreenUiState.copy(selectedSong = events.selectedSong)
             HomeEvents.PauseSong -> pauseSong()
             is HomeEvents.PlaySong -> playSong(indexSong = events.indexSong)
             HomeEvents.ResumeSong -> resumeSong()

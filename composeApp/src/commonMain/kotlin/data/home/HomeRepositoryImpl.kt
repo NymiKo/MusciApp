@@ -22,11 +22,15 @@ class HomeRepositoryImpl(
     }
 
     override suspend fun getSongsMyWave(lastId: Long): List<Song>  = withContext(Dispatchers.IO){
-        val response = httpClient.get("http://f0862137.xsph.ru/musicApp/getSongs.php"){
-            url {
-                parameters.append("lastId", lastId.toString())
-            }
-        }.body<List<Song>>()
-        return@withContext response
+        try {
+            val response = httpClient.get("http://f0862137.xsph.ru/musicApp/getSongs.php"){
+                url {
+                    parameters.append("lastId", lastId.toString())
+                }
+            }.body<List<Song>>()
+            return@withContext response
+        } catch (e: Exception) {
+            return@withContext emptyList()
+        }
     }
 }

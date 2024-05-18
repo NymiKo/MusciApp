@@ -27,10 +27,6 @@ class PlayerViewModel(
         }
     }
 
-    fun play(indexSong: Int) {
-        audioPlayerController.play(indexSong)
-    }
-
     fun resume() {
         audioPlayerController.resume()
     }
