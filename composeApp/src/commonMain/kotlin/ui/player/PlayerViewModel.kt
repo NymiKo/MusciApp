@@ -21,13 +21,16 @@ class PlayerViewModel(
     var playerUiState by mutableStateOf(PlayerScreenUiState())
         private set
 
-    init {
-        loadSongsList()
-    }
-
-    private fun loadSongsList() {
-        viewModelScope.launch {
-            playerUiState = playerUiState.copy(loading = false)
+    fun onEvent(events: PlayerEvents) {
+        when(events) {
+            PlayerEvents.ChangeRepeatMode -> changeRepeatMode()
+            PlayerEvents.ChangeShuffleMode -> changeShuffleMode()
+            is PlayerEvents.ChangeTime -> changeTime(time = events.time)
+            PlayerEvents.NextSong -> nextSong()
+            PlayerEvents.PauseSong -> pauseUseCase.pause()
+            PlayerEvents.PrevSong -> prevSong()
+            PlayerEvents.ResumeSong -> resumeUseCase.resume()
+            is PlayerEvents.ScrollToSong -> scrollToSong(indexSong = events.indexSong)
         }
     }
 

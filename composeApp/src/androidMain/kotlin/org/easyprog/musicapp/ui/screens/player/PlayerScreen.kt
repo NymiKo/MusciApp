@@ -72,6 +72,8 @@ import data.model.Song
 import org.easyprog.musicapp.ui.theme.Purple
 import org.easyprog.musicapp.ui.theme.PurpleDark
 import org.easyprog.musicapp.ui.theme.PurpleLight
+import ui.player.PlayerEvents
+import ui.player.PlayerScreenUiState
 import utils.toTimeString
 import kotlin.math.absoluteValue
 
@@ -80,12 +82,11 @@ import kotlin.math.absoluteValue
 fun PlayerScreen(
     modifier: Modifier = Modifier,
     audioPlayerUiState: AudioPlayerUiState,
-    viewModel: PlayerViewModel,
+    uiState: PlayerScreenUiState,
+    onEvent: (PlayerEvents) -> Unit,
     getSongsListMyWave: () -> Unit,
     onBack: () -> Unit
 ) {
-    val playerScreenUiState = viewModel.playerUiState
-
     if (audioPlayerUiState.currentPosition == audioPlayerUiState.currentSongsList.lastIndex && !audioPlayerUiState.endGetSongs) {
         getSongsListMyWave()
     }
@@ -117,15 +118,15 @@ fun PlayerScreen(
             isPlaying = audioPlayerUiState.playerState == AudioPlayerState.PLAYING,
             isRepeatModeEnabled = audioPlayerUiState.isRepeat,
             isShuffleModeEnabled = audioPlayerUiState.isShuffle,
-            changeTime = viewModel::changeTime,
-            prevSong = viewModel::prevSong,
+            changeTime = { onEvent(PlayerEvents.ChangeTime(it)) },
+            prevSong = { onEvent(PlayerEvents.PrevSong) },
             pauseOrPlay = {
-                if (audioPlayerUiState.playerState == AudioPlayerState.PLAYING) viewModel.pause() else viewModel.resume()
+                if (audioPlayerUiState.playerState == AudioPlayerState.PLAYING) onEvent(PlayerEvents.PauseSong) else onEvent(PlayerEvents.ResumeSong)
             },
-            nextSong = viewModel::nextSong,
-            scrollToSong = viewModel::scrollToSong,
-            changeRepeatMode = viewModel::changeRepeatMode,
-            changeShuffleMode = viewModel::changeShuffleMode
+            nextSong = { onEvent(PlayerEvents.NextSong) },
+            scrollToSong = { onEvent(PlayerEvents.ScrollToSong(it)) },
+            changeRepeatMode = { onEvent(PlayerEvents.ChangeRepeatMode) },
+            changeShuffleMode = { onEvent(PlayerEvents.ChangeShuffleMode) }
         )
     }
 }
