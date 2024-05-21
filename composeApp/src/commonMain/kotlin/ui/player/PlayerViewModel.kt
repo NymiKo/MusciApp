@@ -34,35 +34,27 @@ class PlayerViewModel(
         }
     }
 
-    fun resume() {
-        resumeUseCase.resume()
-    }
-
-    fun pause() {
-        pauseUseCase.pause()
-    }
-
-    fun changeTime(time: Float) {
+    private fun changeTime(time: Float) {
         audioPlayerController.seekTo(time.toLong())
     }
 
-    fun nextSong() {
+    private fun nextSong() {
         audioPlayerController.nextSong()
     }
 
-    fun prevSong() {
+    private fun prevSong() {
         audioPlayerController.prevSong()
     }
 
-    fun scrollToSong(indexSong: Int) {
+    private fun scrollToSong(indexSong: Int) {
         audioPlayerController.play(indexSong)
     }
 
-    fun changeRepeatMode() {
+    private fun changeRepeatMode() {
         audioPlayerController.changeRepeatMode()
     }
 
-    fun changeShuffleMode() {
+    private fun changeShuffleMode() {
         audioPlayerController.changeShuffleMode()
     }
 }
