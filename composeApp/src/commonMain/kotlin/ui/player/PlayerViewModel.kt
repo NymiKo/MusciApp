@@ -7,11 +7,15 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import audio_player.AudioPlayerController
 import data.player.MediaRepository
+import data.usecase.PauseUseCase
+import data.usecase.ResumeUseCase
 import kotlinx.coroutines.launch
 
 class PlayerViewModel(
     private val repository: MediaRepository,
-    private val audioPlayerController: AudioPlayerController
+    private val audioPlayerController: AudioPlayerController,
+    private val resumeUseCase: ResumeUseCase,
+    private val pauseUseCase: PauseUseCase
 ) : ViewModel() {
 
     var playerUiState by mutableStateOf(PlayerScreenUiState())
@@ -28,11 +32,11 @@ class PlayerViewModel(
     }
 
     fun resume() {
-        audioPlayerController.resume()
+        resumeUseCase.resume()
     }
 
     fun pause() {
-        audioPlayerController.pause()
+        pauseUseCase.pause()
     }
 
     fun changeTime(time: Float) {

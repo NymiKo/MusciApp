@@ -8,11 +8,15 @@ import androidx.lifecycle.viewModelScope
 import audio_player.AudioPlayerController
 import data.home.HomeRepository
 import data.model.Song
+import data.usecase.PauseUseCase
+import data.usecase.ResumeUseCase
 import kotlinx.coroutines.launch
 
 class HomeViewModel(
     private val repository: HomeRepository,
-    private val audioPlayerController: AudioPlayerController
+    private val audioPlayerController: AudioPlayerController,
+    private val resumeUseCase: ResumeUseCase,
+    private val pauseUseCase: PauseUseCase
 ): ViewModel() {
 
     var homeScreenUiState by mutableStateOf(HomeScreenUiState())
@@ -20,17 +24,19 @@ class HomeViewModel(
 
     fun onEvent(events: HomeEvents) {
         when(events) {
-            HomeEvents.FetchData -> {
-                homeScreenUiState = homeScreenUiState.copy(loading = true)
-                getLastSongList()
-                getArtists()
-                homeScreenUiState = homeScreenUiState.copy(loading = false)
-            }
-            HomeEvents.PauseSong -> pauseSong()
+            HomeEvents.FetchData -> fetchData()
+            HomeEvents.PauseSong -> pauseUseCase.pause()
             is HomeEvents.PlaySong -> playSong(indexSong = events.indexSong)
-            HomeEvents.ResumeSong -> resumeSong()
+            HomeEvents.ResumeSong -> resumeUseCase.resume()
             is HomeEvents.AddSongsToPlayer -> addSongsToPlayer(songsList = events.songsList)
         }
+    }
+
+    private fun fetchData() {
+        homeScreenUiState = homeScreenUiState.copy(loading = true)
+        getLastSongList()
+        getArtists()
+        homeScreenUiState = homeScreenUiState.copy(loading = false)
     }
 
     private fun getLastSongList() = viewModelScope.launch {
@@ -52,13 +58,5 @@ class HomeViewModel(
 
     private fun playSong(indexSong: Int) {
         audioPlayerController.play(indexSong)
-    }
-
-    private fun resumeSong() {
-        audioPlayerController.resume()
-    }
-
-    private fun pauseSong() {
-        audioPlayerController.pause()
     }
 }

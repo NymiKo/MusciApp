@@ -4,6 +4,7 @@ import android.app.Application
 import di.mediaControllerModule
 import di.ktorModule
 import di.repositoryModule
+import di.useCaseModule
 import di.viewModelModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
@@ -17,7 +18,7 @@ class App: Application() {
         startKoin {
             androidContext(this@App)
             androidLogger()
-            modules(mediaControllerModule, ktorModule, repositoryModule, viewModelModule)
+            modules(mediaControllerModule, ktorModule, repositoryModule, viewModelModule, useCaseModule)
         }
     }
 
