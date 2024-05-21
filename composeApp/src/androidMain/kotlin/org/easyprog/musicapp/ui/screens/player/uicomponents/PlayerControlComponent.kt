@@ -71,7 +71,7 @@ fun PlayerControlRow(
         )
 
         PlayerIcon(
-            size = 65.dp,
+            size = 35.dp,
             imageVector = Icons.Filled.SkipNext,
             tint = if (currentPlayingSongIndex == lastSongIndex && !isRepeatModeEnabled) Color.Gray else MaterialTheme.colorScheme.secondary,
             onClick = nextSong::invoke

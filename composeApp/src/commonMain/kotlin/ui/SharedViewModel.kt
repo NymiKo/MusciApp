@@ -83,7 +83,7 @@ class SharedViewModel(
             else audioPlayerController.addMediaItems(result)
             val songsList = audioPlayerUiState.currentSongsList.toMutableList()
             songsList.addAll(result)
-            setSongsList(songsList)
+            audioPlayerUiState = audioPlayerUiState.copy(currentSongsList = songsList)
             audioPlayerController.play(audioPlayerUiState.currentPosition)
         }
     }
