@@ -1,5 +1,8 @@
 package org.easyprog.musicapp.ui.screens.home
 
+import androidx.compose.animation.AnimatedContentScope
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -30,9 +33,12 @@ import org.easyprog.musicapp.ui.screens.home.uicomponents.MyWaveComponent
 import ui.home.HomeEvents
 import ui.home.HomeScreenUiState
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun HomeScreen(
     modifier: Modifier = Modifier,
+    animatedContentScope: AnimatedContentScope,
+    sharedTransitionScope: SharedTransitionScope,
     audioPlayerUiState: AudioPlayerUiState,
     uiState: HomeScreenUiState,
     onEvent: (HomeEvents) -> Unit,
@@ -63,6 +69,8 @@ fun HomeScreen(
         }
         BottomPlayerComponent(
             modifier = Modifier.navigationBarsPadding().align(Alignment.BottomCenter),
+            animatedContentScope = animatedContentScope,
+            sharedTransitionScope = sharedTransitionScope,
             audioPlayerUiState = audioPlayerUiState,
             onEvent = onEvent::invoke,
             onPlayerScreen = onPlayerScreen::invoke

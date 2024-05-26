@@ -1,21 +1,16 @@
 package org.easyprog.musicapp.ui.screens.player
 
+import androidx.compose.animation.AnimatedContentScope
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.KeyboardArrowDown
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -26,13 +21,16 @@ import data.model.Song
 import org.easyprog.musicapp.ui.screens.player.uicomponents.DetailsMediaComponent
 import org.easyprog.musicapp.ui.screens.player.uicomponents.PlayerControlRow
 import org.easyprog.musicapp.ui.screens.player.uicomponents.SongsListColumn
-import org.easyprog.musicapp.ui.theme.PurpleLight
+import org.easyprog.musicapp.ui.screens.player.uicomponents.TopAppBarPlayer
 import ui.player.PlayerEvents
 import ui.player.PlayerScreenUiState
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun PlayerScreen(
     modifier: Modifier = Modifier,
+    animatedContentScope: AnimatedContentScope,
+    sharedTransitionScope: SharedTransitionScope,
     audioPlayerUiState: AudioPlayerUiState,
     uiState: PlayerScreenUiState,
     onEvent: (PlayerEvents) -> Unit,
@@ -43,31 +41,40 @@ fun PlayerScreen(
         getSongsListMyWave()
     }
 
-    Scaffold(
-        topBar = {
-            TopAppBarPlayer(onBack = onBack::invoke)
+    with(sharedTransitionScope) {
+        Scaffold(
+            modifier = Modifier.Companion.sharedBounds(
+                sharedContentState = sharedTransitionScope.rememberSharedContentState(key = "player-container"),
+                animatedVisibilityScope = animatedContentScope,
+                resizeMode = SharedTransitionScope.ResizeMode.RemeasureToBounds
+            ),
+            topBar = {
+                TopAppBarPlayer(onBack = onBack::invoke)
+            }
+        ) { paddingValues ->
+            PlayerScreen(
+                modifier = modifier.padding(paddingValues),
+                songsList = audioPlayerUiState.currentSongsList,
+                currentPlayingSongIndex = audioPlayerUiState.currentPosition,
+                currentTime = audioPlayerUiState.currentTime.toFloat(),
+                fullTime = audioPlayerUiState.totalTime,
+                isPlaying = audioPlayerUiState.playerState == AudioPlayerState.PLAYING,
+                isRepeatModeEnabled = audioPlayerUiState.isRepeat,
+                isShuffleModeEnabled = audioPlayerUiState.isShuffle,
+                changeTime = { onEvent(PlayerEvents.ChangeTime(it)) },
+                prevSong = { onEvent(PlayerEvents.PrevSong) },
+                pauseOrPlay = {
+                    if (audioPlayerUiState.playerState == AudioPlayerState.PLAYING) onEvent(
+                        PlayerEvents.PauseSong
+                    )
+                    else onEvent(PlayerEvents.ResumeSong)
+                },
+                nextSong = { onEvent(PlayerEvents.NextSong) },
+                scrollToSong = { onEvent(PlayerEvents.ScrollToSong(it)) },
+                changeRepeatMode = { onEvent(PlayerEvents.ChangeRepeatMode) },
+                changeShuffleMode = { onEvent(PlayerEvents.ChangeShuffleMode) }
+            )
         }
-    ) { paddingValues ->
-        PlayerScreen(
-            modifier = modifier.padding(paddingValues),
-            songsList = audioPlayerUiState.currentSongsList,
-            currentPlayingSongIndex = audioPlayerUiState.currentPosition,
-            currentTime = audioPlayerUiState.currentTime.toFloat(),
-            fullTime = audioPlayerUiState.totalTime,
-            isPlaying = audioPlayerUiState.playerState == AudioPlayerState.PLAYING,
-            isRepeatModeEnabled = audioPlayerUiState.isRepeat,
-            isShuffleModeEnabled = audioPlayerUiState.isShuffle,
-            changeTime = { onEvent(PlayerEvents.ChangeTime(it)) },
-            prevSong = { onEvent(PlayerEvents.PrevSong) },
-            pauseOrPlay = {
-                if (audioPlayerUiState.playerState == AudioPlayerState.PLAYING) onEvent(PlayerEvents.PauseSong)
-                else onEvent(PlayerEvents.ResumeSong)
-            },
-            nextSong = { onEvent(PlayerEvents.NextSong) },
-            scrollToSong = { onEvent(PlayerEvents.ScrollToSong(it)) },
-            changeRepeatMode = { onEvent(PlayerEvents.ChangeRepeatMode) },
-            changeShuffleMode = { onEvent(PlayerEvents.ChangeShuffleMode) }
-        )
     }
 }
 
@@ -125,23 +132,4 @@ private fun PlayerScreen(
             changeShuffleMode = changeShuffleMode::invoke
         )
     }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun TopAppBarPlayer(modifier: Modifier = Modifier, onBack: () -> Unit) {
-    TopAppBar(
-        modifier = Modifier.clickable { onBack() },
-        title = {},
-        navigationIcon = {
-            Icon(
-                modifier = Modifier.padding(8.dp).size(35.dp),
-                imageVector = Icons.Rounded.KeyboardArrowDown,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.secondary
-            )
-        },
-        colors = TopAppBarDefaults.topAppBarColors()
-            .copy(containerColor = PurpleLight)
-    )
 }
