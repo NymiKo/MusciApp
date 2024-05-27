@@ -1,8 +1,5 @@
 package org.easyprog.musicapp.ui.screens.player
 
-import androidx.compose.animation.AnimatedContentScope
-import androidx.compose.animation.ExperimentalSharedTransitionApi
-import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
@@ -25,12 +22,9 @@ import org.easyprog.musicapp.ui.screens.player.uicomponents.TopAppBarPlayer
 import ui.player.PlayerEvents
 import ui.player.PlayerScreenUiState
 
-@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun PlayerScreen(
     modifier: Modifier = Modifier,
-    animatedContentScope: AnimatedContentScope,
-    sharedTransitionScope: SharedTransitionScope,
     audioPlayerUiState: AudioPlayerUiState,
     uiState: PlayerScreenUiState,
     onEvent: (PlayerEvents) -> Unit,
@@ -41,40 +35,33 @@ fun PlayerScreen(
         getSongsListMyWave()
     }
 
-    with(sharedTransitionScope) {
-        Scaffold(
-            modifier = Modifier.Companion.sharedBounds(
-                sharedContentState = sharedTransitionScope.rememberSharedContentState(key = "player-container"),
-                animatedVisibilityScope = animatedContentScope,
-                resizeMode = SharedTransitionScope.ResizeMode.RemeasureToBounds
-            ),
-            topBar = {
-                TopAppBarPlayer(onBack = onBack::invoke)
-            }
-        ) { paddingValues ->
-            PlayerScreen(
-                modifier = modifier.padding(paddingValues),
-                songsList = audioPlayerUiState.currentSongsList,
-                currentPlayingSongIndex = audioPlayerUiState.currentPosition,
-                currentTime = audioPlayerUiState.currentTime.toFloat(),
-                fullTime = audioPlayerUiState.totalTime,
-                isPlaying = audioPlayerUiState.playerState == AudioPlayerState.PLAYING,
-                isRepeatModeEnabled = audioPlayerUiState.isRepeat,
-                isShuffleModeEnabled = audioPlayerUiState.isShuffle,
-                changeTime = { onEvent(PlayerEvents.ChangeTime(it)) },
-                prevSong = { onEvent(PlayerEvents.PrevSong) },
-                pauseOrPlay = {
-                    if (audioPlayerUiState.playerState == AudioPlayerState.PLAYING) onEvent(
-                        PlayerEvents.PauseSong
-                    )
-                    else onEvent(PlayerEvents.ResumeSong)
-                },
-                nextSong = { onEvent(PlayerEvents.NextSong) },
-                scrollToSong = { onEvent(PlayerEvents.ScrollToSong(it)) },
-                changeRepeatMode = { onEvent(PlayerEvents.ChangeRepeatMode) },
-                changeShuffleMode = { onEvent(PlayerEvents.ChangeShuffleMode) }
-            )
+    Scaffold(
+        topBar = {
+            TopAppBarPlayer(onBack = onBack::invoke)
         }
+    ) { paddingValues ->
+        PlayerScreen(
+            modifier = modifier.padding(paddingValues),
+            songsList = audioPlayerUiState.currentSongsList,
+            currentPlayingSongIndex = audioPlayerUiState.currentPosition,
+            currentTime = audioPlayerUiState.currentTime.toFloat(),
+            fullTime = audioPlayerUiState.totalTime,
+            isPlaying = audioPlayerUiState.playerState == AudioPlayerState.PLAYING,
+            isRepeatModeEnabled = audioPlayerUiState.isRepeat,
+            isShuffleModeEnabled = audioPlayerUiState.isShuffle,
+            changeTime = { onEvent(PlayerEvents.ChangeTime(it)) },
+            prevSong = { onEvent(PlayerEvents.PrevSong) },
+            pauseOrPlay = {
+                if (audioPlayerUiState.playerState == AudioPlayerState.PLAYING) onEvent(
+                    PlayerEvents.PauseSong
+                )
+                else onEvent(PlayerEvents.ResumeSong)
+            },
+            nextSong = { onEvent(PlayerEvents.NextSong) },
+            scrollToSong = { onEvent(PlayerEvents.ScrollToSong(it)) },
+            changeRepeatMode = { onEvent(PlayerEvents.ChangeRepeatMode) },
+            changeShuffleMode = { onEvent(PlayerEvents.ChangeShuffleMode) }
+        )
     }
 }
 

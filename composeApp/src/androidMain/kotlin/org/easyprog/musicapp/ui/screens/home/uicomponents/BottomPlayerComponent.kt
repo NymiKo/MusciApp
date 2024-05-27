@@ -1,18 +1,7 @@
 package org.easyprog.musicapp.ui.screens.home.uicomponents
 
-import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.BoundsTransform
-import androidx.compose.animation.ExperimentalSharedTransitionApi
-import androidx.compose.animation.SharedTransitionScope
-import androidx.compose.animation.core.keyframes
-import androidx.compose.animation.core.spring
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.scaleIn
-import androidx.compose.animation.scaleOut
 import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -34,7 +23,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.TextUnitType
@@ -48,35 +36,25 @@ import data.model.SongMetadata
 import org.easyprog.musicapp.ui.theme.PurpleDark
 import ui.home.HomeEvents
 
-@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun BottomPlayerComponent(
     modifier: Modifier = Modifier,
-    animatedContentScope: AnimatedContentScope,
-    sharedTransitionScope: SharedTransitionScope,
     audioPlayerUiState: AudioPlayerUiState,
     onEvent: (HomeEvents) -> Unit,
     onPlayerScreen: () -> Unit,
 ) {
-    with(sharedTransitionScope) {
-        AnimatedVisibility(
-            modifier = modifier,
-            visible = audioPlayerUiState.playerState != AudioPlayerState.STOPPED,
-            enter = slideInVertically { it },
-        ) {
-            if (audioPlayerUiState.currentSong != null) {
-                BottomPlayer(
-                    modifier = Modifier.Companion.sharedBounds(
-                        sharedContentState = sharedTransitionScope.rememberSharedContentState(key = "player-container"),
-                        animatedVisibilityScope = animatedContentScope,
-                        resizeMode = SharedTransitionScope.ResizeMode.RemeasureToBounds
-                    ),
-                    song = audioPlayerUiState.currentSong,
-                    playerState = audioPlayerUiState.playerState,
-                    onEvent = onEvent::invoke,
-                    onPlayerScreen = onPlayerScreen::invoke
-                )
-            }
+    AnimatedVisibility(
+        modifier = modifier,
+        visible = audioPlayerUiState.playerState != AudioPlayerState.STOPPED,
+        enter = slideInVertically { it },
+    ) {
+        if (audioPlayerUiState.currentSong != null) {
+            BottomPlayer(
+                song = audioPlayerUiState.currentSong,
+                playerState = audioPlayerUiState.playerState,
+                onEvent = onEvent::invoke,
+                onPlayerScreen = onPlayerScreen::invoke
+            )
         }
     }
 }
