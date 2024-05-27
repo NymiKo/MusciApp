@@ -17,7 +17,7 @@ import kotlinx.coroutines.launch
 class SharedViewModel(
     private val repository: HomeRepository,
     private val audioPlayerController: AudioPlayerController
-): ViewModel() {
+) : ViewModel() {
     var audioPlayerUiState by mutableStateOf(AudioPlayerUiState())
         private set
 
@@ -68,12 +68,13 @@ class SharedViewModel(
     }
 
     fun setSongsList(songsList: List<Song>) {
-        audioPlayerUiState = audioPlayerUiState.copy(currentSongsList = songsList)
+        audioPlayerUiState = audioPlayerUiState.copy(currentSongsList = songsList, myWaveMode = false)
         audioPlayerController.setMediaItems(songsList)
     }
 
     fun getSongs() = viewModelScope.launch {
-        if ((audioPlayerUiState.currentPosition == audioPlayerUiState.currentSongsList.lastIndex || audioPlayerUiState.currentPosition == 0) && !audioPlayerUiState.endGetSongs) {
+        audioPlayerUiState = audioPlayerUiState.copy(myWaveMode = true)
+        if ((audioPlayerUiState.currentPosition == audioPlayerUiState.currentSongsList.lastIndex || audioPlayerUiState.currentPosition == 0) && !audioPlayerUiState.endGetSongs && audioPlayerUiState.myWaveMode) {
             val result = repository.getSongsMyWave(audioPlayerUiState.currentPosition.toLong())
             if (result.isEmpty()) {
                 audioPlayerUiState = audioPlayerUiState.copy(endGetSongs = true)

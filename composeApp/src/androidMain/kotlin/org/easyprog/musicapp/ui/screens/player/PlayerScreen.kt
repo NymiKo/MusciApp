@@ -37,7 +37,7 @@ fun PlayerScreen(
     getSongsListMyWave: () -> Unit,
     onBack: () -> Unit
 ) {
-    if (audioPlayerUiState.currentPosition == audioPlayerUiState.currentSongsList.lastIndex && !audioPlayerUiState.endGetSongs) {
+    if (audioPlayerUiState.currentPosition == audioPlayerUiState.currentSongsList.lastIndex && !audioPlayerUiState.endGetSongs && audioPlayerUiState.myWaveMode) {
         getSongsListMyWave()
     }
 

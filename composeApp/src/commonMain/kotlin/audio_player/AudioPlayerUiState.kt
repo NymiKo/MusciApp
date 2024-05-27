@@ -12,5 +12,6 @@ data class AudioPlayerUiState(
     val totalTime: Long = 0L,
     val isShuffle: Boolean = false,
     val isRepeat: Boolean = false,
-    val endGetSongs: Boolean = false
+    val endGetSongs: Boolean = false,
+    val myWaveMode: Boolean = false
 )
