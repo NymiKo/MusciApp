@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -26,7 +27,7 @@ import org.easyprog.musicapp.ui.theme.PurpleDark
 import org.easyprog.musicapp.ui.theme.PurpleLight
 
 @Composable
-fun MyWaveComponent(modifier: Modifier = Modifier, getSongsListMyWave: () -> Unit) {
+fun MyWaveComponent(modifier: Modifier = Modifier, myWaveMode: Boolean, getSongsListMyWave: () -> Unit) {
     Box(
         modifier = Modifier.padding(16.dp).fillMaxWidth().height(200.dp)
             .clip(RoundedCornerShape(24.dp))
@@ -39,9 +40,10 @@ fun MyWaveComponent(modifier: Modifier = Modifier, getSongsListMyWave: () -> Uni
             },
             verticalAlignment = Alignment.CenterVertically
         ) {
+
             Icon(
                 modifier = Modifier.size(50.dp),
-                imageVector = Icons.Default.PlayArrow,
+                imageVector = if (myWaveMode) Icons.Default.Pause else Icons.Default.PlayArrow,
                 contentDescription = null,
                 tint = Color.White
             )

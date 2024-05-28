@@ -5,6 +5,10 @@ import data.model.Song
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
+import io.ktor.client.request.post
+import io.ktor.client.request.setBody
+import io.ktor.http.ContentType
+import io.ktor.http.contentType
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -21,12 +25,11 @@ class HomeRepositoryImpl(
         return@withContext response
     }
 
-    override suspend fun getSongsMyWave(lastId: Long): List<Song>  = withContext(Dispatchers.IO){
+    override suspend fun getSongsMyWave(currentSongsList: List<Song>): List<Song> = withContext(Dispatchers.IO){
         try {
-            val response = httpClient.get("http://f0862137.xsph.ru/musicApp/getSongs.php"){
-                url {
-                    parameters.append("lastId", lastId.toString())
-                }
+            val response = httpClient.post("http://f0862137.xsph.ru/musicApp/getSongs.php"){
+                contentType(ContentType.Application.Json)
+                setBody(currentSongsList.map { it.id })
             }.body<List<Song>>()
             return@withContext response
         } catch (e: Exception) {

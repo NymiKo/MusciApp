@@ -48,7 +48,7 @@ fun HomeScreen(
             modifier = Modifier.padding(top = 48.dp).fillMaxSize()
                 .verticalScroll(rememberScrollState())
         ) {
-            MyWaveComponent(getSongsListMyWave = getSongsListMyWave::invoke)
+            MyWaveComponent(myWaveMode = audioPlayerUiState.myWaveMode, getSongsListMyWave = getSongsListMyWave::invoke)
             LastSongsComponent(
                 lastSongsList = uiState.lastSongsList,
                 playSong = { _, indexSong ->

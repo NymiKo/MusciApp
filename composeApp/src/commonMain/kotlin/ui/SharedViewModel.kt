@@ -73,9 +73,12 @@ class SharedViewModel(
     }
 
     fun getSongs() = viewModelScope.launch {
-        audioPlayerUiState = audioPlayerUiState.copy(myWaveMode = true)
-        if ((audioPlayerUiState.currentPosition == audioPlayerUiState.currentSongsList.lastIndex || audioPlayerUiState.currentPosition == 0) && !audioPlayerUiState.endGetSongs && audioPlayerUiState.myWaveMode) {
-            val result = repository.getSongsMyWave(audioPlayerUiState.currentPosition.toLong())
+        if (!audioPlayerUiState.myWaveMode) {
+            audioPlayerUiState = audioPlayerUiState.copy(myWaveMode = true, currentSongsList = emptyList(), currentPosition = 0)
+        }
+
+        if (!audioPlayerUiState.endGetSongs && audioPlayerUiState.myWaveMode) {
+            val result = repository.getSongsMyWave(audioPlayerUiState.currentSongsList)
             if (result.isEmpty()) {
                 audioPlayerUiState = audioPlayerUiState.copy(endGetSongs = true)
                 return@launch
