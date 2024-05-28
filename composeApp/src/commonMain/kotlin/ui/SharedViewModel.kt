@@ -12,6 +12,7 @@ import data.home.HomeRepository
 import data.model.Song
 import data.model.SongMetadata
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 
 class SharedViewModel(
@@ -20,6 +21,8 @@ class SharedViewModel(
 ) : ViewModel() {
     var audioPlayerUiState by mutableStateOf(AudioPlayerUiState())
         private set
+
+    private val myWaveFlow = MutableStateFlow(false)
 
     init {
         setupMediaControllerCallback()
@@ -77,18 +80,21 @@ class SharedViewModel(
             audioPlayerUiState = audioPlayerUiState.copy(myWaveMode = true, currentSongsList = emptyList(), currentPosition = 0)
         }
 
-        if (!audioPlayerUiState.endGetSongs && audioPlayerUiState.myWaveMode) {
-            val result = repository.getSongsMyWave(audioPlayerUiState.currentSongsList)
-            if (result.isEmpty()) {
-                audioPlayerUiState = audioPlayerUiState.copy(endGetSongs = true)
-                return@launch
+        while (audioPlayerUiState.myWaveMode) {
+            if ((audioPlayerUiState.currentPosition == audioPlayerUiState.currentSongsList.lastIndex || audioPlayerUiState.currentSongsList.isEmpty()) && !audioPlayerUiState.endGetSongs && audioPlayerUiState.myWaveMode) {
+                val result = repository.getSongsMyWave(audioPlayerUiState.currentSongsList)
+                if (result.isEmpty()) {
+                    audioPlayerUiState = audioPlayerUiState.copy(endGetSongs = true)
+                    return@launch
+                }
+                if (audioPlayerUiState.currentSongsList.isEmpty()) audioPlayerController.setMediaItems(result)
+                else audioPlayerController.addMediaItems(result)
+                val songsList = audioPlayerUiState.currentSongsList.toMutableList()
+                songsList.addAll(result)
+                audioPlayerUiState = audioPlayerUiState.copy(currentSongsList = songsList)
+                audioPlayerController.play(audioPlayerUiState.currentPosition)
             }
-            if (audioPlayerUiState.currentSongsList.isEmpty()) audioPlayerController.setMediaItems(result)
-            else audioPlayerController.addMediaItems(result)
-            val songsList = audioPlayerUiState.currentSongsList.toMutableList()
-            songsList.addAll(result)
-            audioPlayerUiState = audioPlayerUiState.copy(currentSongsList = songsList)
-            audioPlayerController.play(audioPlayerUiState.currentPosition)
+            delay(1000)
         }
     }
 }

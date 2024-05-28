@@ -29,13 +29,8 @@ fun PlayerScreen(
     audioPlayerUiState: AudioPlayerUiState,
     uiState: PlayerScreenUiState,
     onEvent: (PlayerEvents) -> Unit,
-    getSongsListMyWave: () -> Unit,
     onBack: () -> Unit
 ) {
-    if (audioPlayerUiState.currentPosition == audioPlayerUiState.currentSongsList.lastIndex && !audioPlayerUiState.endGetSongs && audioPlayerUiState.myWaveMode) {
-        getSongsListMyWave()
-    }
-
     Scaffold(
         topBar = {
             TopAppBarPlayer(onBack = onBack::invoke)

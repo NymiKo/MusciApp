@@ -1,6 +1,7 @@
 package navigation
 
 object Destinations {
-    const val home = "homeScreen"
+    const val homeScreen = "homeScreen"
     const val playerSongListScreen = "playerSongList"
+    const val artistSongsScreen = "artistSongs"
 }

@@ -7,12 +7,16 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
+import org.easyprog.musicapp.ui.screens.artist_songs.ArtistSongsScreen
 import org.easyprog.musicapp.ui.screens.home.HomeScreen
 import org.easyprog.musicapp.ui.screens.player.PlayerScreen
 import org.koin.androidx.compose.koinViewModel
 import ui.SharedViewModel
+import ui.artist_songs.ArtistSongsViewModel
 import ui.home.HomeEvents
 import ui.home.HomeViewModel
 import ui.player.PlayerViewModel
@@ -21,8 +25,8 @@ import ui.player.PlayerViewModel
 actual fun AppNavHost(navController: NavHostController, sharedViewModel: SharedViewModel) {
     val audioPlayerUiState = sharedViewModel.audioPlayerUiState
 
-    NavHost(navController = navController, startDestination = Destinations.home) {
-        composable(route = Destinations.home) {
+    NavHost(navController = navController, startDestination = Destinations.homeScreen) {
+        composable(route = Destinations.homeScreen) {
             val homeViewModel: HomeViewModel = koinViewModel()
             var isInitialized by rememberSaveable { mutableStateOf(false) }
 
@@ -39,7 +43,8 @@ actual fun AppNavHost(navController: NavHostController, sharedViewModel: SharedV
                 onEvent = homeViewModel::onEvent,
                 onPlayerScreen = { navController.navigate(Destinations.playerSongListScreen) },
                 setSongsList = { sharedViewModel.setSongsList(it) },
-                getSongsListMyWave = sharedViewModel::getSongs
+                getSongsListMyWave = sharedViewModel::getSongs,
+                onArtistSongsList = { idArtist, nameArtist -> navController.navigate("${Destinations.artistSongsScreen}/$idArtist/$nameArtist") }
             )
         }
 
@@ -50,7 +55,19 @@ actual fun AppNavHost(navController: NavHostController, sharedViewModel: SharedV
                 audioPlayerUiState = audioPlayerUiState,
                 uiState = playerViewModel.playerUiState,
                 onEvent = playerViewModel::onEvent,
-                getSongsListMyWave = sharedViewModel::getSongs,
+                onBack = navController::navigateUp
+            )
+        }
+
+        composable(
+            route = "${Destinations.artistSongsScreen}/{idArtist}/{nameArtist}",
+            arguments = listOf(
+                navArgument("idArtist") { type = NavType.LongType })
+        ) {
+            val artistSongsViewModel: ArtistSongsViewModel = koinViewModel()
+
+            ArtistSongsScreen(
+                uiState = artistSongsViewModel.artistSongsUiState,
                 onBack = navController::navigateUp
             )
         }

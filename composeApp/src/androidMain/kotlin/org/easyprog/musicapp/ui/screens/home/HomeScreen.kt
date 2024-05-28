@@ -38,7 +38,8 @@ fun HomeScreen(
     onEvent: (HomeEvents) -> Unit,
     onPlayerScreen: () -> Unit,
     setSongsList: (songsList: List<Song>) -> Unit,
-    getSongsListMyWave: () -> Unit
+    getSongsListMyWave: () -> Unit,
+    onArtistSongsList: (idArtist: Long, nameArtist: String) -> Unit
 ) {
     Box(
         modifier = modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)
@@ -48,7 +49,13 @@ fun HomeScreen(
             modifier = Modifier.padding(top = 48.dp).fillMaxSize()
                 .verticalScroll(rememberScrollState())
         ) {
-            MyWaveComponent(myWaveMode = audioPlayerUiState.myWaveMode, getSongsListMyWave = getSongsListMyWave::invoke)
+            MyWaveComponent(
+                myWaveMode = audioPlayerUiState.myWaveMode,
+                playerState = audioPlayerUiState.playerState,
+                playSong = { onEvent(HomeEvents.ResumeSong) },
+                pauseSong = { onEvent(HomeEvents.PauseSong) },
+                getSongsListMyWave = getSongsListMyWave::invoke
+            )
             LastSongsComponent(
                 lastSongsList = uiState.lastSongsList,
                 playSong = { _, indexSong ->
@@ -56,7 +63,7 @@ fun HomeScreen(
                     onEvent(HomeEvents.PlaySong(indexSong))
                 }
             )
-            ArtistsComponent(artistsList = uiState.artistsList)
+            ArtistsComponent(artistsList = uiState.artistsList, onArtistSongsScreen = onArtistSongsList::invoke)
             if (audioPlayerUiState.playerState != AudioPlayerState.STOPPED) {
                 Spacer(modifier = Modifier.fillMaxWidth().height(80.dp))
             }
@@ -73,7 +80,7 @@ fun HomeScreen(
 @Composable
 fun NameCategory(modifier: Modifier = Modifier, text: String) {
     DefaultText(
-        modifier = modifier.padding(horizontal = 16.dp).fillMaxWidth(),
+        modifier = modifier.padding(horizontal = 16.dp),
         text = text,
         fontSize = 26.sp,
         color = MaterialTheme.colorScheme.secondary,
