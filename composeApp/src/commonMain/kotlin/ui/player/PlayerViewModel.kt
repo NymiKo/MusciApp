@@ -5,8 +5,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import audio_player.AudioPlayerController
-import data.usecase.PauseUseCase
-import data.usecase.ResumeUseCase
+import ui.usecase.PauseUseCase
+import ui.usecase.ResumeUseCase
 
 class PlayerViewModel(
     private val audioPlayerController: AudioPlayerController,

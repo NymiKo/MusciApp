@@ -1,7 +1,7 @@
 package di
 
-import data.usecase.PauseUseCase
-import data.usecase.ResumeUseCase
+import ui.usecase.PauseUseCase
+import ui.usecase.ResumeUseCase
 import org.koin.dsl.module
 
 val useCaseModule = module {

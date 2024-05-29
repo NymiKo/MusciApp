@@ -8,8 +8,8 @@ import androidx.lifecycle.viewModelScope
 import audio_player.AudioPlayerController
 import data.home.HomeRepository
 import data.model.Song
-import data.usecase.PauseUseCase
-import data.usecase.ResumeUseCase
+import ui.usecase.PauseUseCase
+import ui.usecase.ResumeUseCase
 import kotlinx.coroutines.launch
 
 class HomeViewModel(

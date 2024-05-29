@@ -23,7 +23,7 @@ fun ArtistSongsScreen(modifier: Modifier = Modifier, uiState: ArtistSongsScreenU
             Box(modifier = Modifier.fillMaxWidth()) {
                 AsyncImage(modifier = Modifier.size(300.dp), model = uiState.imageArtist, contentDescription = null)
             }
-            ArtistSongsListComponent(songsList = emptyList())
+            ArtistSongsListComponent(songsList = uiState.songsList)
         }
     }
 }
