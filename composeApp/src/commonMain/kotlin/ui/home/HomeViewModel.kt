@@ -22,6 +22,10 @@ class HomeViewModel(
     var homeScreenUiState by mutableStateOf(HomeScreenUiState())
         private set
 
+    init {
+        onEvent(HomeEvents.FetchData)
+    }
+
     fun onEvent(events: HomeEvents) {
         when(events) {
             HomeEvents.FetchData -> fetchData()

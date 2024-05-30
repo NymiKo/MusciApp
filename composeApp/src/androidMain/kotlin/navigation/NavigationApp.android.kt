@@ -1,11 +1,15 @@
 package navigation
 
+import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.core.EaseIn
+import androidx.compose.animation.core.EaseOut
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -17,7 +21,6 @@ import org.easyprog.musicapp.ui.screens.player.PlayerScreen
 import org.koin.androidx.compose.koinViewModel
 import ui.SharedViewModel
 import ui.artist_songs.ArtistSongsViewModel
-import ui.home.HomeEvents
 import ui.home.HomeViewModel
 import ui.player.PlayerViewModel
 
@@ -25,17 +28,13 @@ import ui.player.PlayerViewModel
 actual fun AppNavHost(navController: NavHostController, sharedViewModel: SharedViewModel) {
     val audioPlayerUiState = sharedViewModel.audioPlayerUiState
 
-    NavHost(navController = navController, startDestination = Destinations.homeScreen) {
+    NavHost(navController = navController,
+        startDestination = Destinations.homeScreen,
+        enterTransition = { EnterTransition.None },
+        exitTransition = { ExitTransition.None }
+    ) {
         composable(route = Destinations.homeScreen) {
             val homeViewModel: HomeViewModel = koinViewModel()
-            var isInitialized by rememberSaveable { mutableStateOf(false) }
-
-            if (!isInitialized) {
-                LaunchedEffect(Unit) {
-                    homeViewModel.onEvent(HomeEvents.FetchData)
-                    isInitialized = true
-                }
-            }
 
             HomeScreen(
                 audioPlayerUiState = audioPlayerUiState,
@@ -61,8 +60,23 @@ actual fun AppNavHost(navController: NavHostController, sharedViewModel: SharedV
 
         composable(
             route = "${Destinations.artistSongsScreen}/{idArtist}/{nameArtist}",
-            arguments = listOf(
-                navArgument("idArtist") { type = NavType.LongType })
+            arguments = listOf(navArgument("idArtist") { type = NavType.LongType }),
+            enterTransition = {
+                fadeIn(
+                    animationSpec = tween(300, easing = LinearEasing)
+                ) + slideIntoContainer(
+                    animationSpec = tween(300, easing = EaseIn),
+                    towards = AnimatedContentTransitionScope.SlideDirection.Start
+                )
+            },
+            exitTransition = {
+                fadeOut(
+                    animationSpec = tween(300, easing = LinearEasing)
+                ) + slideOutOfContainer(
+                    animationSpec = tween(300, easing = EaseOut),
+                    towards = AnimatedContentTransitionScope.SlideDirection.End
+                )
+            }
         ) {
             val artistSongsViewModel: ArtistSongsViewModel = koinViewModel()
 
