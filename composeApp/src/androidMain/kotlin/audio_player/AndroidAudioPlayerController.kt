@@ -49,6 +49,7 @@ class AndroidAudioPlayerController(context: Context) : AudioPlayerController {
                     audioControllerCallback?.invoke(
                         playbackState.toPlayerState(isPlaying),
                         SongMetadata(
+                            mediaId = currentMediaItem?.mediaId!!,
                             title = currentMediaItem?.mediaMetadata?.title.toString(),
                             artist = currentMediaItem?.mediaMetadata?.artist.toString(),
                             artwork = currentMediaItem?.mediaMetadata?.artworkUri.toString()

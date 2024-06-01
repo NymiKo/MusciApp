@@ -40,7 +40,8 @@ import ui.home.HomeEvents
 fun BottomPlayerComponent(
     modifier: Modifier = Modifier,
     audioPlayerUiState: AudioPlayerUiState,
-    onEvent: (HomeEvents) -> Unit,
+    resumeSong: () -> Unit,
+    pauseSong: () -> Unit,
     onPlayerScreen: () -> Unit,
 ) {
     AnimatedVisibility(
@@ -52,7 +53,8 @@ fun BottomPlayerComponent(
             BottomPlayer(
                 song = audioPlayerUiState.currentSong,
                 playerState = audioPlayerUiState.playerState,
-                onEvent = onEvent::invoke,
+                resumeSong = resumeSong,
+                pauseSong = pauseSong,
                 onPlayerScreen = onPlayerScreen::invoke
             )
         }
@@ -64,7 +66,8 @@ private fun BottomPlayer(
     modifier: Modifier = Modifier,
     song: SongMetadata,
     playerState: AudioPlayerState,
-    onEvent: (HomeEvents) -> Unit,
+    resumeSong: () -> Unit,
+    pauseSong: () -> Unit,
     onPlayerScreen: () -> Unit
 ) {
     Row(
@@ -102,9 +105,9 @@ private fun BottomPlayer(
                 indication = null
             ) {
                 if (playerState == AudioPlayerState.PLAYING) {
-                    onEvent(HomeEvents.PauseSong)
+                    pauseSong()
                 } else {
-                    onEvent(HomeEvents.ResumeSong)
+                    resumeSong()
                 }
             },
             imageVector = if (playerState == AudioPlayerState.PLAYING) Icons.Default.Pause else Icons.Default.PlayArrow,

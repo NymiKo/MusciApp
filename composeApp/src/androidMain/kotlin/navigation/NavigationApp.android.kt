@@ -85,6 +85,7 @@ actual fun AppNavHost(navController: NavHostController, sharedViewModel: SharedV
                 audioPlayerUiState = sharedViewModel.audioPlayerUiState,
                 onEvent = artistSongsViewModel::onEvent,
                 setSongsList = sharedViewModel::setSongsList,
+                onPlayerScreen = { navController.navigate(Destinations.playerSongListScreen) },
                 onBack = navController::navigateUp
             )
         }

@@ -32,6 +32,7 @@ import audio_player.AudioPlayerUiState
 import coil3.compose.AsyncImage
 import custom_elements.text.DefaultText
 import data.model.Song
+import org.easyprog.musicapp.ui.screens.player.uicomponents.NowPlayingSong
 import org.easyprog.musicapp.ui.screens.player.uicomponents.SongArtistAndTitle
 import org.easyprog.musicapp.ui.theme.Purple
 import ui.artist_songs.ArtistSongsEvents
@@ -44,7 +45,6 @@ fun ArtistSongsListComponent(
     onEvent: (ArtistSongsEvents) -> Unit,
     setSongsList: (songsList: List<Song>) -> Unit
 ) {
-
     Column(
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally
@@ -130,7 +130,8 @@ fun ArtistSongsLazyColumn(
                     }
                     onEvent(ArtistSongsEvents.PlaySong(it))
                 },
-                song = songsList[it]
+                song = songsList[it],
+                isPlaying = audioPlayerUiState.currentSong?.mediaId == songsList[it].urlMusic
             )
         }
     }
@@ -139,6 +140,7 @@ fun ArtistSongsLazyColumn(
 @Composable
 private fun ArtistSongItem(
     modifier: Modifier = Modifier,
+    isPlaying: Boolean,
     song: Song
 ) {
     Row(
@@ -152,6 +154,7 @@ private fun ArtistSongItem(
             contentDescription = null
         )
         SongArtistAndTitle(modifier = Modifier.weight(1F), artist = song.artist, title = song.title)
+        NowPlayingSong(modifier = Modifier.align(Alignment.Bottom), isPlaying = isPlaying)
     }
 }
 

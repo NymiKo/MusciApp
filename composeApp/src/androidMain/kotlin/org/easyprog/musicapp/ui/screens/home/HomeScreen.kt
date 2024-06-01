@@ -46,8 +46,7 @@ fun HomeScreen(
             .statusBarsPadding().navigationBarsPadding()
     ) {
         Column(
-            modifier = Modifier.padding(top = 48.dp).fillMaxSize()
-                .verticalScroll(rememberScrollState())
+            modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()),
         ) {
             MyWaveComponent(
                 myWaveMode = audioPlayerUiState.myWaveMode,
@@ -71,7 +70,8 @@ fun HomeScreen(
         BottomPlayerComponent(
             modifier = Modifier.navigationBarsPadding().align(Alignment.BottomCenter),
             audioPlayerUiState = audioPlayerUiState,
-            onEvent = onEvent::invoke,
+            resumeSong = { onEvent(HomeEvents.ResumeSong) },
+            pauseSong = { onEvent(HomeEvents.PauseSong) },
             onPlayerScreen = onPlayerScreen::invoke
         )
     }

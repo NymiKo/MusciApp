@@ -15,6 +15,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Color
@@ -28,8 +29,10 @@ import coil3.compose.AsyncImage
 import data.model.Song
 import org.easyprog.musicapp.ui.screens.artist_songs.uicomponents.ArtistSongsListComponent
 import org.easyprog.musicapp.ui.screens.artist_songs.uicomponents.LargeTopAppBarCustom
+import org.easyprog.musicapp.ui.screens.home.uicomponents.BottomPlayerComponent
 import ui.artist_songs.ArtistSongsEvents
 import ui.artist_songs.ArtistSongsScreenUiState
+import ui.home.HomeEvents
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -39,6 +42,7 @@ fun ArtistSongsScreen(
     audioPlayerUiState: AudioPlayerUiState,
     setSongsList: (songsList: List<Song>) -> Unit,
     onEvent: (ArtistSongsEvents) -> Unit,
+    onPlayerScreen: () -> Unit,
     onBack: () -> Unit
 ) {
     val scrollBehavior =
@@ -70,13 +74,15 @@ fun ArtistSongsScreen(
             },
             containerColor = Color.Transparent
         ) { innerPadding ->
-            ArtistSongsListComponent(
-                modifier = Modifier.padding(innerPadding),
-                songsList = uiState.songsList,
-                audioPlayerUiState = audioPlayerUiState,
-                onEvent = onEvent::invoke,
-                setSongsList = setSongsList::invoke
-            )
+            Box(modifier = Modifier.fillMaxSize()) {
+                ArtistSongsListComponent(
+                    modifier = Modifier.padding(innerPadding),
+                    songsList = uiState.songsList,
+                    audioPlayerUiState = audioPlayerUiState,
+                    onEvent = onEvent::invoke,
+                    setSongsList = setSongsList::invoke
+                )
+            }
         }
     }
 }

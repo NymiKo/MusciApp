@@ -105,12 +105,5 @@ fun NowPlayingSong(
             letterSpacing = TextUnit(-0.5F, TextUnitType.Sp),
             fontSize = 16.sp
         )
-    } else {
-        Icon(
-            modifier = modifier.size(20.dp).clip(CircleShape).background(Color.Gray),
-            imageVector = Icons.Default.PlayArrow,
-            contentDescription = null,
-            tint = Color.Black
-        )
     }
 }

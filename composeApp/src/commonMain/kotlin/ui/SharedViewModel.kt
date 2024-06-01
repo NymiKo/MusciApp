@@ -22,8 +22,6 @@ class SharedViewModel(
     var audioPlayerUiState by mutableStateOf(AudioPlayerUiState())
         private set
 
-    private val myWaveFlow = MutableStateFlow(false)
-
     init {
         setupMediaControllerCallback()
     }
