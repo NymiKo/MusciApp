@@ -8,15 +8,15 @@ import androidx.lifecycle.viewModelScope
 import audio_player.AudioPlayerController
 import data.home.HomeRepository
 import data.model.Song
-import ui.usecase.PauseUseCase
-import ui.usecase.ResumeUseCase
+import ui.usecase.PauseSongUseCase
+import ui.usecase.ResumeSongUseCase
 import kotlinx.coroutines.launch
 
 class HomeViewModel(
     private val repository: HomeRepository,
     private val audioPlayerController: AudioPlayerController,
-    private val resumeUseCase: ResumeUseCase,
-    private val pauseUseCase: PauseUseCase
+    private val resumeSongUseCase: ResumeSongUseCase,
+    private val pauseSongUseCase: PauseSongUseCase
 ): ViewModel() {
 
     var homeScreenUiState by mutableStateOf(HomeScreenUiState())
@@ -29,9 +29,9 @@ class HomeViewModel(
     fun onEvent(events: HomeEvents) {
         when(events) {
             HomeEvents.FetchData -> fetchData()
-            HomeEvents.PauseSong -> pauseUseCase.pause()
+            HomeEvents.PauseSong -> pauseSongUseCase.pause()
             is HomeEvents.PlaySong -> playSong(indexSong = events.indexSong)
-            HomeEvents.ResumeSong -> resumeUseCase.resume()
+            HomeEvents.ResumeSong -> resumeSongUseCase.resume()
             is HomeEvents.AddSongsToPlayer -> addSongsToPlayer(songsList = events.songsList)
         }
     }

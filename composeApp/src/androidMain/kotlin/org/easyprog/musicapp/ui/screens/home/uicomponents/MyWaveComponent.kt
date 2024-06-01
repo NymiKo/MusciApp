@@ -39,7 +39,7 @@ fun MyWaveComponent(
     getSongsListMyWave: () -> Unit
 ) {
     Box(
-        modifier = Modifier.padding(16.dp).fillMaxWidth().height(200.dp)
+        modifier = modifier.padding(16.dp).fillMaxWidth().height(200.dp)
             .clip(RoundedCornerShape(24.dp))
             .background(Brush.verticalGradient(listOf(PurpleLight, PurpleDark))),
         contentAlignment = Alignment.Center

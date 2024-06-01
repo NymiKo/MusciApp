@@ -5,13 +5,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import audio_player.AudioPlayerController
-import ui.usecase.PauseUseCase
-import ui.usecase.ResumeUseCase
+import ui.usecase.PauseSongUseCase
+import ui.usecase.ResumeSongUseCase
 
 class PlayerViewModel(
     private val audioPlayerController: AudioPlayerController,
-    private val resumeUseCase: ResumeUseCase,
-    private val pauseUseCase: PauseUseCase
+    private val resumeSongUseCase: ResumeSongUseCase,
+    private val pauseSongUseCase: PauseSongUseCase
 ) : ViewModel() {
 
     var playerUiState by mutableStateOf(PlayerScreenUiState())
@@ -23,9 +23,9 @@ class PlayerViewModel(
             PlayerEvents.ChangeShuffleMode -> changeShuffleMode()
             is PlayerEvents.ChangeTime -> changeTime(time = events.time)
             PlayerEvents.NextSong -> nextSong()
-            PlayerEvents.PauseSong -> pauseUseCase.pause()
+            PlayerEvents.PauseSong -> pauseSongUseCase.pause()
             PlayerEvents.PrevSong -> prevSong()
-            PlayerEvents.ResumeSong -> resumeUseCase.resume()
+            PlayerEvents.ResumeSong -> resumeSongUseCase.resume()
             is PlayerEvents.ScrollToSong -> scrollToSong(indexSong = events.indexSong)
         }
     }

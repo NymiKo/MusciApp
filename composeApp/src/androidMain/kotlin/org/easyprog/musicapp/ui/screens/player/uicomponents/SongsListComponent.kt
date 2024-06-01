@@ -62,28 +62,33 @@ fun SongItem(
             .fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        Column(
-            modifier = Modifier.weight(1F),
-            verticalArrangement = Arrangement.spacedBy(4.dp)
-        ) {
-            DefaultText(
-                text = song.artist,
-                color = MaterialTheme.colorScheme.secondary,
-                letterSpacing = TextUnit(-0.5F, TextUnitType.Sp),
-                fontSize = 20.sp,
-                textAlign = TextAlign.Start
-            )
-
-            DefaultText(
-                text = song.title,
-                color = Color.Gray,
-                letterSpacing = TextUnit(-0.5F, TextUnitType.Sp),
-                fontSize = 16.sp,
-                textAlign = TextAlign.Start
-            )
-        }
+        SongArtistAndTitle(modifier = Modifier.weight(1F), artist = song.artist, title = song.title)
 
         NowPlayingSong(modifier = Modifier.align(Alignment.Bottom), isPlaying = isPlaying)
+    }
+}
+
+@Composable
+fun SongArtistAndTitle(modifier: Modifier = Modifier, artist: String, title: String) {
+    Column(
+        modifier = modifier,
+        verticalArrangement = Arrangement.spacedBy(4.dp)
+    ) {
+        DefaultText(
+            text = title,
+            color = MaterialTheme.colorScheme.secondary,
+            letterSpacing = TextUnit(-0.5F, TextUnitType.Sp),
+            fontSize = 20.sp,
+            textAlign = TextAlign.Start
+        )
+
+        DefaultText(
+            text = artist,
+            color = Color.Gray,
+            letterSpacing = TextUnit(-0.5F, TextUnitType.Sp),
+            fontSize = 16.sp,
+            textAlign = TextAlign.Start
+        )
     }
 }
 

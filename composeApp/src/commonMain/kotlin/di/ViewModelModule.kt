@@ -12,5 +12,5 @@ val viewModelModule: Module = module {
     factory { PlayerViewModel(get(), get(), get()) }
     factory { SharedViewModel(get(), get()) }
     factory { HomeViewModel(get(), get(), get(), get()) }
-    factory { ArtistSongsViewModel(get(), get()) }
+    factory { ArtistSongsViewModel(get(), get(), get(), get(), get()) }
 }

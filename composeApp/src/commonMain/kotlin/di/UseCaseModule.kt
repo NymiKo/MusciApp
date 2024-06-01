@@ -1,10 +1,12 @@
 package di
 
-import ui.usecase.PauseUseCase
-import ui.usecase.ResumeUseCase
+import ui.usecase.PauseSongUseCase
+import ui.usecase.ResumeSongUseCase
 import org.koin.dsl.module
+import ui.usecase.PlaySongUseCase
 
 val useCaseModule = module {
-    single { ResumeUseCase(get()) }
-    single { PauseUseCase(get()) }
+    single { ResumeSongUseCase(get()) }
+    single { PauseSongUseCase(get()) }
+    single { PlaySongUseCase(get()) }
 }
