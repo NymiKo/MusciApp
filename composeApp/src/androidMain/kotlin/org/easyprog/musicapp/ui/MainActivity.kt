@@ -7,6 +7,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.material3.Surface
 import androidx.navigation.compose.rememberNavController
 import audio_player.MediaService
 import navigation.AppNavHost
@@ -30,7 +31,9 @@ class MainActivity : ComponentActivity() {
         setContent {
             val navController = rememberNavController()
             AppTheme {
-                AppNavHost(navController = navController, sharedViewModel = sharedViewModel)
+                Surface {
+                    AppNavHost(navController = navController, sharedViewModel = sharedViewModel)
+                }
             }
         }
     }

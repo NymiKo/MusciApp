@@ -9,6 +9,8 @@ import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -51,7 +53,25 @@ actual fun AppNavHost(navController: NavHostController, sharedViewModel: SharedV
             )
         }
 
-        composable(route = Destinations.playerSongListScreen) {
+        composable(
+            route = Destinations.playerSongListScreen,
+            enterTransition = {
+                fadeIn(
+                    animationSpec = tween(300, easing = LinearEasing)
+                ) + slideInVertically(
+                    animationSpec = tween(300, easing = EaseIn),
+                    initialOffsetY = { it }
+                )
+            },
+            exitTransition = {
+                fadeOut(
+                    animationSpec = tween(300, easing = LinearEasing)
+                ) + slideOutVertically(
+                    animationSpec = tween(300, easing = EaseOut),
+                    targetOffsetY = { it }
+                )
+            }
+        ) {
             val playerViewModel: PlayerViewModel = koinViewModel()
 
             PlayerScreen(
@@ -93,7 +113,25 @@ actual fun AppNavHost(navController: NavHostController, sharedViewModel: SharedV
             )
         }
 
-        composable(route = Destinations.artistsListScreen) {
+        composable(
+            route = Destinations.artistsListScreen,
+            enterTransition = {
+                fadeIn(
+                    animationSpec = tween(300, easing = LinearEasing)
+                ) + slideIntoContainer(
+                    animationSpec = tween(300, easing = EaseIn),
+                    towards = AnimatedContentTransitionScope.SlideDirection.Start
+                )
+            },
+            exitTransition = {
+                fadeOut(
+                    animationSpec = tween(300, easing = LinearEasing)
+                ) + slideOutOfContainer(
+                    animationSpec = tween(300, easing = EaseOut),
+                    towards = AnimatedContentTransitionScope.SlideDirection.End
+                )
+            }
+        ) {
             val artistsListViewModel: ArtistsListViewModel = koinViewModel()
 
             ArtistsListScreen(
