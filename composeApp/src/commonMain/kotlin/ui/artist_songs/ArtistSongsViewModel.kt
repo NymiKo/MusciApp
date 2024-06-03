@@ -28,12 +28,12 @@ class ArtistSongsViewModel(
         private set
 
     init {
-        onEvent(ArtistSongsEvents.fetchArtistSongs)
+        onEvent(ArtistSongsEvents.FetchArtistSongs)
     }
 
     fun onEvent(events: ArtistSongsEvents) {
         when(events) {
-            ArtistSongsEvents.fetchArtistSongs -> fetchArtistSongs()
+            ArtistSongsEvents.FetchArtistSongs -> fetchArtistSongs()
             is ArtistSongsEvents.PlaySong -> playSongUseCase.playSong(events.indexSong)
             ArtistSongsEvents.PauseSong -> pauseSongUseCase.pause()
             ArtistSongsEvents.ResumeSong -> resumeSongUseCase.resume()

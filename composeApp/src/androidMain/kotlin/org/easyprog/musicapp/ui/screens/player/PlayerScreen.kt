@@ -1,12 +1,13 @@
 package org.easyprog.musicapp.ui.screens.player
 
-import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.KeyboardArrowDown
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
@@ -19,7 +20,8 @@ import data.model.Song
 import org.easyprog.musicapp.ui.screens.player.uicomponents.DetailsMediaComponent
 import org.easyprog.musicapp.ui.screens.player.uicomponents.PlayerControlRow
 import org.easyprog.musicapp.ui.screens.player.uicomponents.SongsListColumn
-import org.easyprog.musicapp.ui.screens.player.uicomponents.TopAppBarPlayer
+import org.easyprog.musicapp.ui.screens.player.uicomponents.TopAppBarCustom
+import org.easyprog.musicapp.ui.theme.PurpleLight
 import ui.player.PlayerEvents
 import ui.player.PlayerScreenUiState
 
@@ -33,7 +35,11 @@ fun PlayerScreen(
 ) {
     Scaffold(
         topBar = {
-            TopAppBarPlayer(onBack = onBack::invoke)
+            TopAppBarCustom(
+                navigationIcon = Icons.Rounded.KeyboardArrowDown,
+                backgroundColor = PurpleLight,
+                onBack = onBack::invoke
+            )
         }
     ) { paddingValues ->
         PlayerScreen(

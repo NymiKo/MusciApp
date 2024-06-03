@@ -37,6 +37,7 @@ fun HomeScreen(
     uiState: HomeScreenUiState,
     onEvent: (HomeEvents) -> Unit,
     onPlayerScreen: () -> Unit,
+    onArtistsListScreen: () -> Unit,
     setSongsList: (songsList: List<Song>) -> Unit,
     getSongsListMyWave: () -> Unit,
     onArtistSongsList: (idArtist: Long, nameArtist: String) -> Unit
@@ -62,7 +63,7 @@ fun HomeScreen(
                     onEvent(HomeEvents.PlaySong(indexSong))
                 }
             )
-            ArtistsComponent(artistsList = uiState.artistsList, onArtistSongsScreen = onArtistSongsList::invoke)
+            ArtistsComponent(artistsList = uiState.artistsList, onArtistSongsScreen = onArtistSongsList::invoke, onArtistsListScreen = onArtistsListScreen::invoke)
             if (audioPlayerUiState.playerState != AudioPlayerState.STOPPED) {
                 Spacer(modifier = Modifier.fillMaxWidth().height(80.dp))
             }

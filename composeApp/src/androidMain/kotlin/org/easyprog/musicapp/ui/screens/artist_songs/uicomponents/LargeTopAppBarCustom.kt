@@ -26,18 +26,17 @@ import custom_elements.text.DefaultText
 @Composable
 fun LargeTopAppBarCustom(modifier: Modifier = Modifier, title: String, scrollBehavior: TopAppBarScrollBehavior, onBack: () -> Unit) {
     LargeTopAppBar(
-        modifier = modifier.padding(horizontal = 16.dp),
+        modifier = modifier,
         title = {
             DefaultText(
                 modifier = Modifier.fillMaxWidth(),
                 text = title,
                 fontSize = 20.sp,
-                color = MaterialTheme.colorScheme.secondary,
-                textAlign = TextAlign.Center
+                color = MaterialTheme.colorScheme.secondary
             )
         },
         navigationIcon = {
-            Icon(modifier = Modifier.clickable(
+            Icon(modifier = Modifier.padding(start = 16.dp).clickable(
                 interactionSource = remember { MutableInteractionSource() },
                 indication = null
             ) { onBack() },

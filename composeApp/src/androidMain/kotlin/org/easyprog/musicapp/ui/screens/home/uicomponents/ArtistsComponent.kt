@@ -25,34 +25,46 @@ import custom_elements.text.DefaultText
 import data.model.Artist
 import org.easyprog.musicapp.ui.screens.home.NameCategory
 import org.easyprog.musicapp.ui.theme.Purple
-import org.easyprog.musicapp.ui.theme.PurpleDark
-import org.easyprog.musicapp.ui.theme.PurpleLight
 
 @Composable
-fun ArtistsComponent(modifier: Modifier = Modifier, artistsList: List<Artist>, onArtistSongsScreen: (idArtist: Long, nameArtist: String) -> Unit) {
+fun ArtistsComponent(
+    modifier: Modifier = Modifier,
+    artistsList: List<Artist>,
+    onArtistSongsScreen: (idArtist: Long, nameArtist: String) -> Unit,
+    onArtistsListScreen: () -> Unit
+) {
     Column(
         modifier = modifier.padding(top = 48.dp),
         verticalArrangement = Arrangement.spacedBy(24.dp)
     ) {
-        NameCategoryRow()
+        NameCategoryRow(onArtistsListScreen = onArtistsListScreen::invoke)
         ArtistsRow(artistsList = artistsList, onArtistSongsScreen = onArtistSongsScreen::invoke)
     }
 }
 
 @Composable
-private fun NameCategoryRow(modifier: Modifier = Modifier) {
+private fun NameCategoryRow(modifier: Modifier = Modifier, onArtistsListScreen: () -> Unit) {
     Row(
         modifier = modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically
     ) {
         NameCategory(text = "Исполнители")
         Spacer(modifier = Modifier.weight(1F))
-        DefaultText(modifier = Modifier.padding(end = 16.dp), text = "Еще", fontSize = 20.sp, color = Purple)
+        DefaultText(
+            modifier = Modifier.padding(end = 16.dp).clickable { onArtistsListScreen() },
+            text = "Еще",
+            fontSize = 20.sp,
+            color = Purple
+        )
     }
 }
 
 @Composable
-private fun ArtistsRow(modifier: Modifier = Modifier, artistsList: List<Artist>, onArtistSongsScreen: (idArtist: Long, nameArtist: String) -> Unit) {
+private fun ArtistsRow(
+    modifier: Modifier = Modifier,
+    artistsList: List<Artist>,
+    onArtistSongsScreen: (idArtist: Long, nameArtist: String) -> Unit
+) {
     LazyRow(
         modifier = modifier,
         horizontalArrangement = Arrangement.spacedBy(16.dp),
@@ -60,7 +72,12 @@ private fun ArtistsRow(modifier: Modifier = Modifier, artistsList: List<Artist>,
     ) {
         items(count = artistsList.size, key = { artistsList[it].id }) {
             ArtistItem(
-                modifier = Modifier.clickable { onArtistSongsScreen(artistsList[it].id, artistsList[it].name) },
+                modifier = Modifier.clickable {
+                    onArtistSongsScreen(
+                        artistsList[it].id,
+                        artistsList[it].name
+                    )
+                },
                 artistName = artistsList[it].name,
                 artistImage = artistsList[it].urlImage,
             )
