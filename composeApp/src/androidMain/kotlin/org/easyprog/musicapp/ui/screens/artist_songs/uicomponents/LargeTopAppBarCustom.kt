@@ -12,39 +12,46 @@ import androidx.compose.material3.LargeTopAppBar
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
-import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import custom_elements.text.DefaultText
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LargeTopAppBarCustom(modifier: Modifier = Modifier, title: String, scrollBehavior: TopAppBarScrollBehavior, onBack: () -> Unit) {
+fun LargeTopAppBarCustom(
+    modifier: Modifier = Modifier,
+    title: String,
+    scrollBehavior: TopAppBarScrollBehavior,
+    onBack: () -> Unit
+) {
     LargeTopAppBar(
         modifier = modifier,
         title = {
             DefaultText(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.padding(end = 16.dp).fillMaxWidth(),
                 text = title,
                 fontSize = 20.sp,
                 color = MaterialTheme.colorScheme.secondary
             )
         },
         navigationIcon = {
-            Icon(modifier = Modifier.padding(start = 16.dp).clickable(
-                interactionSource = remember { MutableInteractionSource() },
-                indication = null
-            ) { onBack() },
+            Icon(
+                modifier = Modifier.padding(start = 16.dp).clickable(
+                    interactionSource = remember { MutableInteractionSource() },
+                    indication = null
+                ) { onBack() },
                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                 contentDescription = null
             )
         },
-        colors = TopAppBarDefaults.largeTopAppBarColors(containerColor = Color.Transparent, scrolledContainerColor = Color.Transparent),
+        colors = TopAppBarDefaults.largeTopAppBarColors(
+            containerColor = Color.Transparent,
+            scrolledContainerColor = Color.Transparent
+        ),
         scrollBehavior = scrollBehavior
     )
 }

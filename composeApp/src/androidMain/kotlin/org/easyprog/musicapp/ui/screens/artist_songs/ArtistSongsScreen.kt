@@ -42,7 +42,6 @@ fun ArtistSongsScreen(
     audioPlayerUiState: AudioPlayerUiState,
     setSongsList: (songsList: List<Song>) -> Unit,
     onEvent: (ArtistSongsEvents) -> Unit,
-    onPlayerScreen: () -> Unit,
     onBack: () -> Unit
 ) {
     val scrollBehavior =

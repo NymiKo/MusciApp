@@ -19,7 +19,8 @@ fun DefaultText(
     fontSize: TextUnit = 14.sp,
     fontWeight: FontWeight = FontWeight.Bold,
     letterSpacing: TextUnit = TextUnit(-1.5F, TextUnitType.Sp),
-    textAlign: TextAlign = TextAlign.Center
+    textAlign: TextAlign = TextAlign.Center,
+    maxLines: Int = 1,
 ) = Text(
     modifier = modifier,
     text = text,
@@ -28,6 +29,6 @@ fun DefaultText(
     fontWeight = fontWeight,
     letterSpacing = letterSpacing,
     textAlign = textAlign,
-    maxLines = 1,
+    maxLines = maxLines,
     overflow = TextOverflow.Ellipsis
 )

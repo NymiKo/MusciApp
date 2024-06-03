@@ -30,8 +30,7 @@ fun TopAppBarCustom(modifier: Modifier = Modifier, title: String = "", navigatio
             DefaultText(
                 text = title,
                 fontSize = 20.sp,
-                color = MaterialTheme.colorScheme.secondary,
-                textAlign = TextAlign.Center
+                color = MaterialTheme.colorScheme.secondary
             )
         },
         navigationIcon = {
