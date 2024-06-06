@@ -2,6 +2,7 @@ package data.home
 
 import data.model.Artist
 import data.model.Song
+import io.github.aakira.napier.Napier
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get

@@ -18,6 +18,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.WindowState
 import androidx.compose.ui.window.application
+import androidx.lifecycle.viewmodel.compose.viewModel
 import audio_player.AudioPlayerUiState
 import di.ktorModule
 import di.mediaControllerModule
@@ -34,34 +35,36 @@ import ui.home.HomeViewModel
 
 lateinit var koin: Koin
 
-fun main() = application {
-
+fun main() {
     koin = startKoin {
         modules(mediaControllerModule, ktorModule, repositoryModule, useCaseModule, viewModelModule)
     }.koin
 
-    val sharedViewModel: SharedViewModel = koin.get()
+    return application {
 
-    Window(
-        onCloseRequest = ::exitApplication,
-        title = "MusicApp",
-        icon = null,
-        state = WindowState(width = 1145.dp, height = 775.dp)
-    ) {
-        AppTheme {
-            Surface {
-                val homeViewModel: HomeViewModel = koin.get()
+        val sharedViewModel: SharedViewModel = koin.get()
 
-                HomeScreen(
-                    audioPlayerUiState = sharedViewModel.audioPlayerUiState,
-                    uiState = homeViewModel.homeScreenUiState,
-                    onEvent = homeViewModel::onEvent,
-                    onPlayerScreen = {  },
-                    onArtistsListScreen = {  },
-                    setSongsList = { sharedViewModel.setSongsList(it) },
-                    getSongsListMyWave = sharedViewModel::getSongs,
-                    onArtistSongsList = { idArtist, nameArtist ->  }
-                )
+        Window(
+            onCloseRequest = ::exitApplication,
+            title = "MusicApp",
+            icon = null,
+            state = WindowState(width = 1145.dp, height = 775.dp)
+        ) {
+            AppTheme {
+                Surface {
+                    val homeViewModel: HomeViewModel = koin.get()
+
+                        HomeScreen(
+                            audioPlayerUiState = sharedViewModel.audioPlayerUiState,
+                            uiState = homeViewModel.homeScreenUiState,
+                            onEvent = homeViewModel::onEvent,
+                            onPlayerScreen = {  },
+                            onArtistsListScreen = {  },
+                            setSongsList = { sharedViewModel.setSongsList(it) },
+                            getSongsListMyWave = sharedViewModel::getSongs,
+                            onArtistSongsList = { idArtist, nameArtist ->  }
+                        )
+                }
             }
         }
     }

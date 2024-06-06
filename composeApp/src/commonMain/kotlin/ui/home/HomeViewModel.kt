@@ -23,7 +23,7 @@ class HomeViewModel(
         private set
 
     init {
-        //onEvent(HomeEvents.FetchData)
+        onEvent(HomeEvents.FetchData)
     }
 
     fun onEvent(events: HomeEvents) {

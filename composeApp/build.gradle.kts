@@ -46,11 +46,13 @@ kotlin {
             implementation(libs.androidx.lifecycle.viewmodel)
             implementation(libs.androidx.navigation)
             implementation(libs.koin.compose)
+            implementation(libs.logger.napier)
+            implementation(libs.logback.classic)
         }
         desktopMain.dependencies {
             implementation(compose.desktop.currentOs)
-            implementation(libs.ktor.client.cio)
             implementation(libs.vlcj)
+            implementation(libs.ktor.client.okhttp)
             implementation(libs.kotlin.coroutines.swing)
         }
     }
