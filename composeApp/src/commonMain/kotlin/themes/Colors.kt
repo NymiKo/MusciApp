@@ -1,4 +1,4 @@
-package org.easyprog.musicapp.ui.theme
+package themes
 
 import androidx.compose.ui.graphics.Color
 

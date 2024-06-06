@@ -25,7 +25,6 @@ import androidx.compose.material3.SliderDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -45,11 +44,10 @@ import coil3.compose.AsyncImage
 import custom_elements.slider.customSliderColors
 import custom_elements.text.DefaultText
 import custom_elements.text.TimeText
-import data.model.Song
 import data.model.SongMetadata
-import org.easyprog.musicapp.ui.theme.Purple
-import org.easyprog.musicapp.ui.theme.PurpleDark
-import org.easyprog.musicapp.ui.theme.PurpleLight
+import themes.Purple
+import themes.PurpleDark
+import themes.PurpleLight
 import utils.toTimeString
 import kotlin.math.absoluteValue
 

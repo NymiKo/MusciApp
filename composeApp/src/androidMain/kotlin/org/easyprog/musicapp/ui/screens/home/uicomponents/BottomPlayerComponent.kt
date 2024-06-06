@@ -33,8 +33,7 @@ import audio_player.AudioPlayerUiState
 import coil3.compose.AsyncImage
 import custom_elements.text.DefaultText
 import data.model.SongMetadata
-import org.easyprog.musicapp.ui.theme.PurpleDark
-import ui.home.HomeEvents
+import themes.PurpleDark
 
 @Composable
 fun BottomPlayerComponent(

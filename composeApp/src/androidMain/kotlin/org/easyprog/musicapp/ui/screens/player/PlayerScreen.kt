@@ -16,13 +16,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import audio_player.AudioPlayerState
 import audio_player.AudioPlayerUiState
-import data.model.Song
 import data.model.SongMetadata
 import org.easyprog.musicapp.ui.screens.player.uicomponents.DetailsMediaComponent
 import org.easyprog.musicapp.ui.screens.player.uicomponents.PlayerControlRow
 import org.easyprog.musicapp.ui.screens.player.uicomponents.SongsListColumn
 import org.easyprog.musicapp.ui.screens.player.uicomponents.TopAppBarCustom
-import org.easyprog.musicapp.ui.theme.PurpleLight
+import themes.PurpleLight
 import ui.player.PlayerEvents
 import ui.player.PlayerScreenUiState
 

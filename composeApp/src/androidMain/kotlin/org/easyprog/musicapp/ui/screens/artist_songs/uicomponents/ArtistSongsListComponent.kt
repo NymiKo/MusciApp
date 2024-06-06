@@ -34,7 +34,7 @@ import custom_elements.text.DefaultText
 import data.model.Song
 import org.easyprog.musicapp.ui.screens.player.uicomponents.NowPlayingSong
 import org.easyprog.musicapp.ui.screens.player.uicomponents.SongArtistAndTitle
-import org.easyprog.musicapp.ui.theme.Purple
+import themes.Purple
 import ui.artist_songs.ArtistSongsEvents
 
 @Composable

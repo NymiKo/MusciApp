@@ -24,7 +24,7 @@ import coil3.compose.AsyncImage
 import custom_elements.text.DefaultText
 import data.model.Artist
 import org.easyprog.musicapp.ui.screens.home.NameCategory
-import org.easyprog.musicapp.ui.theme.Purple
+import themes.Purple
 
 @Composable
 fun ArtistsComponent(

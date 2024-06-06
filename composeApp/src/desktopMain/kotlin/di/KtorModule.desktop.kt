@@ -1,6 +1,7 @@
 package di
 
 import io.ktor.client.HttpClient
+import io.ktor.client.engine.java.Java
 import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.serialization.kotlinx.json.json
@@ -10,7 +11,7 @@ import org.koin.dsl.module
 
 actual val ktorModule: Module = module {
     single {
-        HttpClient {
+        HttpClient(Java) {
             expectSuccess = true
             install(HttpTimeout) {
                 val timeout = 30000L

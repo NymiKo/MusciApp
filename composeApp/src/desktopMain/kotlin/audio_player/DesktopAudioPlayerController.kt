@@ -118,15 +118,15 @@ class DesktopAudioPlayerController() : AudioPlayerController {
     }
 
     override fun setMediaItems(songs: List<Song>) {
-
+        mediaPlayer?.media()?.play(songs.first().urlMusic)
     }
 
     override fun addMediaItems(songs: List<Song>) {
-
+        mediaPlayer?.media()?.play(songs.first().urlMusic)
     }
 
     override fun play(indexSong: Int) {
-        mediaPlayer?.controls()?.play()
+        //mediaPlayer?.controls()?.play()
     }
 
     override fun resume() {

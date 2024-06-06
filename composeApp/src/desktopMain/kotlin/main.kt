@@ -28,6 +28,7 @@ import navigation.Destinations
 import org.koin.core.Koin
 import org.koin.core.context.startKoin
 import screens.home.HomeScreen
+import themes.AppTheme
 import ui.SharedViewModel
 import ui.home.HomeViewModel
 
@@ -47,7 +48,7 @@ fun main() = application {
         icon = null,
         state = WindowState(width = 1145.dp, height = 775.dp)
     ) {
-        MaterialTheme {
+        AppTheme {
             Surface {
                 val homeViewModel: HomeViewModel = koin.get()
 

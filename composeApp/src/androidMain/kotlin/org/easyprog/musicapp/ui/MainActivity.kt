@@ -11,8 +11,7 @@ import androidx.compose.material3.Surface
 import androidx.navigation.compose.rememberNavController
 import audio_player.MediaService
 import navigation.AppNavHost
-import org.easyprog.musicapp.ui.theme.AppTheme
-import org.koin.android.ext.android.getKoin
+import themes.AppTheme
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ui.SharedViewModel
 

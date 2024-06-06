@@ -26,8 +26,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import audio_player.AudioPlayerState
-import org.easyprog.musicapp.ui.theme.PurpleDark
-import org.easyprog.musicapp.ui.theme.PurpleLight
+import themes.PurpleDark
+import themes.PurpleLight
 
 @Composable
 fun MyWaveComponent(
