@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -17,19 +18,28 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.WindowState
 import androidx.compose.ui.window.application
+import audio_player.AudioPlayerUiState
+import di.ktorModule
 import di.mediaControllerModule
+import di.repositoryModule
+import di.useCaseModule
+import di.viewModelModule
+import navigation.Destinations
 import org.koin.core.Koin
 import org.koin.core.context.startKoin
-import screens.TrendsScreen
-import screens.player_view.PlayerComponent
+import screens.home.HomeScreen
+import ui.SharedViewModel
+import ui.home.HomeViewModel
 
 lateinit var koin: Koin
 
 fun main() = application {
 
     koin = startKoin {
-        modules(mediaControllerModule)
+        modules(mediaControllerModule, ktorModule, repositoryModule, useCaseModule, viewModelModule)
     }.koin
+
+    val sharedViewModel: SharedViewModel = koin.get()
 
     Window(
         onCloseRequest = ::exitApplication,
@@ -38,41 +48,20 @@ fun main() = application {
         state = WindowState(width = 1145.dp, height = 775.dp)
     ) {
         MaterialTheme {
-            Row(
-                modifier = Modifier.fillMaxSize().background(Color.Black.copy(alpha = 0.95F))
-            ) {
-                Title(modifier = Modifier)
-                Column(
-                    modifier = Modifier.padding(12.dp).fillMaxSize(),
-                    verticalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
-                    TrendsScreen(modifier = Modifier.weight(1F))
-                    PlayerComponent(modifier = Modifier)
-                }
+            Surface {
+                val homeViewModel: HomeViewModel = koin.get()
+
+                HomeScreen(
+                    audioPlayerUiState = sharedViewModel.audioPlayerUiState,
+                    uiState = homeViewModel.homeScreenUiState,
+                    onEvent = homeViewModel::onEvent,
+                    onPlayerScreen = {  },
+                    onArtistsListScreen = {  },
+                    setSongsList = { sharedViewModel.setSongsList(it) },
+                    getSongsListMyWave = sharedViewModel::getSongs,
+                    onArtistSongsList = { idArtist, nameArtist ->  }
+                )
             }
         }
-    }
-}
-
-@Composable
-private fun Title(modifier: Modifier = Modifier) {
-    Column(
-        modifier = modifier.padding(horizontal = 40.dp, vertical = 8.dp)
-    ) {
-        Text(
-            modifier = Modifier,
-            fontWeight = FontWeight.Bold,
-            text = "Не яндекс",
-            fontSize = 16.sp,
-            color = Color.Yellow
-        )
-        Text(
-            modifier = Modifier,
-            text = "Музыка",
-            fontSize = 26.sp,
-            letterSpacing = TextUnit(4F, TextUnitType.Sp),
-            fontWeight = FontWeight.ExtraBold,
-            color = Color.Yellow
-        )
     }
 }

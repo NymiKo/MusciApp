@@ -7,7 +7,5 @@ import org.koin.core.module.Module
 import org.koin.dsl.module
 
 actual val mediaControllerModule: Module = module {
-    single<MediaRepository> { MediaRepositoryImpl() }
     single<AudioPlayerController> { DesktopAudioPlayerController() }
-    factory { PlayerViewModel(get(), get()) }
 }

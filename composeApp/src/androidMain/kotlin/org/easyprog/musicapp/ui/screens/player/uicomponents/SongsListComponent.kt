@@ -19,11 +19,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import custom_elements.text.DefaultText
 import data.model.Song
+import data.model.SongMetadata
 
 @Composable
 fun SongsListColumn(
     modifier: Modifier = Modifier,
-    songsList: List<Song>,
+    songsList: List<SongMetadata>,
     currentPlayingSongIndex: Int,
     scrollToSong: (page: Int) -> Unit
 ) {
@@ -31,7 +32,7 @@ fun SongsListColumn(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        items(count = songsList.size, key = { songsList[it].id }) { index ->
+        items(count = songsList.size, key = { songsList[it].mediaId }) { index ->
             SongItem(
                 modifier = Modifier.clickable {
                     scrollToSong(index)
@@ -46,7 +47,7 @@ fun SongsListColumn(
 @Composable
 fun SongItem(
     modifier: Modifier = Modifier,
-    song: Song,
+    song: SongMetadata,
     isPlaying: Boolean
 ) {
     Row(

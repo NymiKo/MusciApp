@@ -12,7 +12,8 @@ interface AudioPlayerController {
         currentTime: Long,
         totalTime: Long,
         isShuffle: Boolean,
-        isRepeat: Boolean
+        isRepeat: Boolean,
+        mediaList: List<SongMetadata>
         ) -> Unit
     )?
     fun setMediaItems(songs: List<Song>)

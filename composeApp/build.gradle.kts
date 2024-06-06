@@ -24,14 +24,10 @@ kotlin {
         androidMain.dependencies {
             implementation(libs.compose.ui.tooling.preview)
             implementation(libs.androidx.activity.compose)
-            implementation(project.dependencies.platform(libs.koin.bom))
-            implementation(libs.coil)
-            implementation(libs.coil.ktor)
-            implementation(libs.koin.core)
             implementation(libs.ktor.client.okhttp)
-            implementation(libs.koin.android)
             implementation(libs.androidx.lifecycle.viewmodel.ktx)
             implementation(libs.bundles.media3)
+            implementation(libs.koin.androidx.compose)
         }
         commonMain.dependencies {
             implementation(compose.runtime)
@@ -40,27 +36,22 @@ kotlin {
             implementation(compose.materialIconsExtended)
             implementation(compose.ui)
             implementation(compose.components.resources)
-            implementation(libs.coil)
+            implementation(libs.bundles.coil)
             implementation(libs.bundles.ktor)
             implementation(libs.kotlin.serialization)
             implementation(compose.components.uiToolingPreview)
             implementation(project.dependencies.platform(libs.koin.bom))
             implementation(libs.koin.core)
             implementation(libs.kotlin.coroutines.core)
-            implementation(libs.kotlin.coroutines.swing)
             implementation(libs.androidx.lifecycle.viewmodel)
             implementation(libs.androidx.navigation)
             implementation(libs.koin.compose)
-            implementation(libs.koin.androidx.compose)
         }
         desktopMain.dependencies {
             implementation(compose.desktop.currentOs)
-            implementation(libs.coil)
-            implementation(libs.coil.ktor)
             implementation(libs.ktor.client.cio)
             implementation(libs.vlcj)
-            implementation(project.dependencies.platform(libs.koin.bom))
-            implementation(libs.koin.core)
+            implementation(libs.kotlin.coroutines.swing)
         }
     }
 }

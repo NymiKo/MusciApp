@@ -46,6 +46,7 @@ import custom_elements.slider.customSliderColors
 import custom_elements.text.DefaultText
 import custom_elements.text.TimeText
 import data.model.Song
+import data.model.SongMetadata
 import org.easyprog.musicapp.ui.theme.Purple
 import org.easyprog.musicapp.ui.theme.PurpleDark
 import org.easyprog.musicapp.ui.theme.PurpleLight
@@ -57,7 +58,7 @@ import kotlin.math.absoluteValue
 fun DetailsMediaComponent(
     modifier: Modifier = Modifier,
     pagerState: PagerState,
-    songsList: List<Song>,
+    songsList: List<SongMetadata>,
     currentTime: Float,
     currentPlayingSongIndex: Int,
     fullTime: Long,
@@ -70,7 +71,7 @@ fun DetailsMediaComponent(
     ) {
         ArtworkMediaHorizontalPager(
             pagerState = pagerState,
-            artworkUrls = songsList.map { it.urlImage },
+            artworkUrls = songsList.map { it.artwork },
             currentPlayingSongIndex = currentPlayingSongIndex
         )
 
@@ -164,7 +165,7 @@ fun RowTimeAndNameDetailMedia(
     modifier: Modifier = Modifier,
     currentTime: Float,
     fullTime: Long,
-    song: Song
+    song: SongMetadata
 ) {
     Row(
         modifier = modifier.fillMaxWidth().padding(horizontal = 24.dp),
@@ -188,7 +189,7 @@ fun RowTimeAndNameDetailMedia(
 @Composable
 fun ArtistAndNameMediaColumn(
     modifier: Modifier = Modifier,
-    song: Song
+    song: SongMetadata
 ) {
     Column(
         modifier = modifier.padding(horizontal = 16.dp),

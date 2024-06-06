@@ -27,7 +27,7 @@ class SharedViewModel(
     }
 
     private fun setupMediaControllerCallback() {
-        audioControllerCallback { playerState, currentSong, currentPosition, currentTime, totalTime, isShuffle, isRepeat ->
+        audioControllerCallback { playerState, currentSong, currentPosition, currentTime, totalTime, isShuffle, isRepeat, mediaList ->
             audioPlayerUiState = audioPlayerUiState.copy(
                 playerState = playerState,
                 currentSong = currentSong,
@@ -35,7 +35,8 @@ class SharedViewModel(
                 currentTime = currentTime,
                 totalTime = totalTime,
                 isShuffle = isShuffle,
-                isRepeat = isRepeat
+                isRepeat = isRepeat,
+                mediaList = mediaList
             )
 
             if (audioPlayerUiState.playerState == AudioPlayerState.PLAYING) {
@@ -58,7 +59,8 @@ class SharedViewModel(
             currentTime: Long,
             totalTime: Long,
             isShuffle: Boolean,
-            isRepeat: Boolean
+            isRepeat: Boolean,
+            mediaList: List<SongMetadata>
         ) -> Unit
     ) {
         audioPlayerController.audioControllerCallback = callback

@@ -17,6 +17,7 @@ import androidx.compose.ui.unit.dp
 import audio_player.AudioPlayerState
 import audio_player.AudioPlayerUiState
 import data.model.Song
+import data.model.SongMetadata
 import org.easyprog.musicapp.ui.screens.player.uicomponents.DetailsMediaComponent
 import org.easyprog.musicapp.ui.screens.player.uicomponents.PlayerControlRow
 import org.easyprog.musicapp.ui.screens.player.uicomponents.SongsListColumn
@@ -44,7 +45,7 @@ fun PlayerScreen(
     ) { paddingValues ->
         PlayerScreen(
             modifier = modifier.padding(paddingValues),
-            songsList = audioPlayerUiState.currentSongsList,
+            songsList = audioPlayerUiState.mediaList,
             currentPlayingSongIndex = audioPlayerUiState.currentPosition,
             currentTime = audioPlayerUiState.currentTime.toFloat(),
             fullTime = audioPlayerUiState.totalTime,
@@ -71,7 +72,7 @@ fun PlayerScreen(
 @Composable
 private fun PlayerScreen(
     modifier: Modifier = Modifier,
-    songsList: List<Song>,
+    songsList: List<SongMetadata>,
     currentPlayingSongIndex: Int,
     currentTime: Float,
     fullTime: Long,

@@ -25,7 +25,8 @@ class AndroidAudioPlayerController(context: Context) : AudioPlayerController {
         currentTime: Long,
         totalTime: Long,
         isShuffle: Boolean,
-        isRepeat: Boolean
+        isRepeat: Boolean,
+        mediaList: List<SongMetadata>
     ) -> Unit
     )? = null
 
@@ -58,7 +59,8 @@ class AndroidAudioPlayerController(context: Context) : AudioPlayerController {
                         currentPosition.coerceAtLeast(0L),
                         duration.coerceAtLeast(0L),
                         shuffleModeEnabled,
-                        repeatMode == Player.REPEAT_MODE_ALL
+                        repeatMode == Player.REPEAT_MODE_ALL,
+                        getMediaList()
                     )
                 }
             }
@@ -117,12 +119,10 @@ class AndroidAudioPlayerController(context: Context) : AudioPlayerController {
 
     override fun nextSong() {
         mediaPlayer?.seekToNext()
-        //mediaPlayer?.playWhenReady = true
     }
 
     override fun prevSong() {
         mediaPlayer?.seekToPrevious()
-        //mediaPlayer?.playWhenReady = true
     }
 
     override fun seekTo(time: Long) {
@@ -150,5 +150,23 @@ class AndroidAudioPlayerController(context: Context) : AudioPlayerController {
     override fun release() {
         MediaController.releaseFuture(controllerFuture)
         audioControllerCallback = null
+    }
+
+    private fun getMediaList(): List<SongMetadata> {
+        val mediaList = mutableListOf<SongMetadata>()
+        if (mediaPlayer != null && mediaPlayer?.mediaItemCount!! > 0) {
+            for (i in 0 until mediaPlayer!!.mediaItemCount) {
+                val mediaItem = mediaPlayer!!.getMediaItemAt(i)
+                mediaList.add(
+                    SongMetadata(
+                        mediaId = mediaItem.mediaId,
+                        title = mediaItem.mediaMetadata.title.toString(),
+                        artwork = mediaItem.mediaMetadata.artworkUri.toString(),
+                        artist = mediaItem.mediaMetadata.artist.toString()
+                    )
+                )
+            }
+        }
+        return mediaList
     }
 }
